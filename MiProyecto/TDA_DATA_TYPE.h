@@ -9,10 +9,20 @@ struct dataType{
 };
 
 //Estructura de conjunto para armar los padres de cada conjunto de la 5-upla.
+//Representa el arbol.
 struct setType{
 	int iNodeType;
-	struct dataType * dtDatum;
-	struct dataType * dtNext;
+	struct dataType * dtDatum;		//Hijo izquierdo.
+	struct dataType * dtNext;		//Hijo derecho.
 };
+
+//Declaracion de los punteros correspondientes.
+struct setType* stRoot;
+struct setType* stLeft;
+struct setType* stRight;
+
+//Metodos generales.
+void load();
+void show();
 
 #endif

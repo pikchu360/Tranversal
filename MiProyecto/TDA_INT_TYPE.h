@@ -1,5 +1,5 @@
-#ifndef TDA_INT_TYPE._H
-#define TDA_INT_TYPE._H
+#ifndef TDA_INT_TYPE_H
+#define TDA_INT_TYPE_H
 
 //defino el codigos del tipos de datos asociado.
 #define INT 1024

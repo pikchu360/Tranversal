@@ -1,5 +1,5 @@
-#ifndef TDA_CHAR_TYPE._H
-#define TDA_CHAR_TYPE._H
+#ifndef TDA_CHAR_TYPE_H
+#define TDA_CHAR_TYPE_H
 
 //defino el codigos del tipos de datos asociado.
 #define CHAR 1025
