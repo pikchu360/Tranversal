@@ -138,24 +138,24 @@ void MenuLambda(char* States, char* Alpha){
 				
 				char Aux[5];
 				int entrada = 0;
-				printf ("\nCargue una de las transiciones de %s , %s:   ", AuxS2,AuxA2);
-				intro(TransitionLambda);
-					if (strstr(States,Aux)== NULL ){
-						strcat(States,Aux);
-						printf("\nDesea cargar otro Estado  Si/No:  ");
+				printf ("\nCargue una transicion de %s , %s :   ", AuxS2,AuxA2);
+				strcat(TransitionLambda, AuxS2);
+				strcat(TransitionLambda, ';');
+				strcat(TransitionLambda, AuxA2);
+				strcat(TransitionLambda, ';');
+				intro(Aux);
+					if (strstr(States,Aux)!= NULL ){
+						strcat(TransitionLambda,Aux);
+						printf("\nDesea cargar otra Transicion para %s , %s  (Si/No):  " , AuxS2,AuxA2);
 						fflush(stdin);
 						Flag = getchar();
 						if((Flag == 'n') || (Flag== 'N') ){
-							entrada = 1	;
+							Salida = 1;
 							strcat(States,"\n");}
+						else Salida = 0;
 					}
-				}		
-				printf("Estos son sus Estados S/N: %s", States);
-				Flag = 'S';
-				fflush(stdin);
-				Flag = getchar();
-				if((Flag == 's') || (Flag == 'S'))
-					Salida = 0;
+				
+					
 				
 			}while (Salida != 0);	
 			
