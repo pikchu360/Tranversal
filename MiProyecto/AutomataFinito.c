@@ -1,6 +1,8 @@
 #include "AutomataFinito.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 //METODOS PARA LECTURA.
 //Ingresa unicamente enteros.
@@ -48,12 +50,12 @@ struct stringType insertString(){
 	struct stringType chais;
 	
 	//limpio el buffer.
-	while(getchar()!='\n');
-	
-	printf("\n\nIngresa una cadena: ");
+	//while(getchar()!='\n');
+	fflush(stdin);
+	//printf("\n\nIngresa una cadena: ");
 	
 	//Asignacion de valores para la estructura.
-	gets(chais.stValue);
+	gets(chais.stChais);
 	chais.iNodeType = STRING;
 	
 	return chais;
@@ -75,10 +77,50 @@ void charShow(struct charType ctChar){
 
 //Imprime la estructura stringType.
 void stringShow(struct stringType stString){
-	printf("\nCadena: %s", stString.stValue);
+	printf("\nCadena: %s", stString.stChais);
 	printf("\nTipo STRING: %d", stString.iNodeType);
 }//Funciona.
 
+//Opcion para continuar o no el ingreso.
+bool option(){
+	char opt[2];
+	printf("\nContinuar carga? S/n: ");
+	do{
+		fflush(stdin);
+		gets(opt);
+		if ( opt[0]=='s' || opt[0]=='S') {
+			return true;
+		}
+		else if (opt[0] == 'n' || opt[0]=='N')
+		{
+			return false;
+		}else {
+			printf("\nError. Ingrese s/n: ");
+		}
+	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' || opt[0]!='N' );
+}//Funciona.
+
+//METODOS INDIVIDUALES DEL AUTOMATA.
+void loadStates(){
+	struct dataType* temp = (struct setType*) malloc( sizeof(struct setType));
+	struct dataType* father = (struct setType*) malloc(sizeof(struct setType));
+		
+	temp = father = NULL;
+
+	printf("\nEstado/os del automata: ");
+	do{
+		
+		fflush(stdin);
+		printf("\nIngrese estado: ");
+		struct stringType in = insertString();
+		
+		//printf("---------->pasa");
+		father->dtDatum_L = in;
+		father->dtNext_R = NULL;
+
+		stringShow(in);
+	} while (option());	
+}
 
 //METODOS PARA EL ARBOL.
 void initializeTree(){
@@ -95,10 +137,19 @@ bool isEmpty(){
 
 //Carga el arbol.
 void loadAll(){
-	
+	struct setType* rootBU = (struct setType*) malloc( sizeof(struct setType));
+	rootBU = stRoot;
+	loadStates();
+
+	stRoot = rootBU;
 }
 //Muestra el arbol.
 void showAll(){
 	
 }
 
+/*
+
+
+
+*/
