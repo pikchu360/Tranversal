@@ -1,10 +1,12 @@
-#ifndef AUTOMATAFINITO_H
-#define AUTOMATAFINITO_H
+#ifndef AutomataFinito_H
+#define AutomataFinito_H
 
 //defino el codigos del tipos de datos asociado.
 #define INT 1024
 #define CHAR 1025
 #define STRING 1032
+#define LIST 1033
+#define SET 1034
 
 //Estructura de conjunto para armar los padres de cada conjunto de la 5-upla.
 //Representa el arbol.
