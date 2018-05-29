@@ -8,51 +8,40 @@
 #define LIST 1033
 #define SET 1034
 
+//Declaracion de los punteros correspondientes.
+typedef struct dataType* dataPtr;
+typedef struct stringType* stringPtr;
+typedef struct charType* charPtr;
+
 //Estructura de conjunto para armar los padres de cada conjunto de la 5-upla.
 //Representa el arbol.
-struct setType{
-	int iNodeType;
-	struct dataType * dtDatum;		//Hijo izquierdo.
-	struct dataType * dtNext;		//Hijo derecho.
-};
-
-//Declaracion de los punteros correspondientes.
-struct setType* stRoot;
-
-//Defino la estructura
 struct dataType{
-	int iNodeType;					//codigo del tipo de dato asociado.
-	struct dataType * dtDatum_L;	//registro de algun tipo de dato.	
-	struct dataType * dtNext_R;	//siguiente registro.
+	int iNodeType;		//Codigo del tipo de dato.
+	dataPtr dtDatum;	//Hijo izquierdo.
+	dataPtr dtNext;		//Hijo derecho.
 };
+
 
 //Declaro los tipos de datos.
-//Estructura de un entero
-struct intType{
-	int iNodeType;					//codigo del tipo de dato.
-	int iValue;						//identificador del nodo.
-};
 
 //Estructura de tipo char.
 struct charType{
-	int iNodeType;					//codigo del tipo de dato.
-	char cValue;					//identificador del nodo.
+	int iNodeType;		//codigo del tipo de dato.
+	char cValue;		//identificador del nodo.
 };
 
 //Estructura para una cadena
 struct stringType{
 	int iNodeType;
-	char stValue[10];
+	char stChais[10];
 };
 
 //Metodos para los registros de tipo de datos.
 //Inserta un dato de tipo intType.
-struct intType insertInt();
 struct charType insertChar();
 struct stringType insertString();
 
 //Muestra un dato de tipo intType.
-void intShow();
 void charShow();
 void stringShow();
 

@@ -1,4 +1,4 @@
-#include "MENU.h"
+#include "Menu.h"
 #include "AutomataFinito.h"
 #include <stdbool.h>
 #include <stdlib.h>

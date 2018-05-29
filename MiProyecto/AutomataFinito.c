@@ -5,29 +5,6 @@
 #include <stdio.h>
 
 //METODOS PARA LECTURA.
-//Ingresa unicamente enteros.
-struct intType insertInt(){
-	bool flag=true;
-	int iNumber;
-	struct intType itNumber;
-	
-	while(flag){
-		printf("\n\nIngrese un entero: ");
-		if( scanf("%d",&iNumber) != 1 ){
-			printf("\n\n\tError de carga.. Ingrese un numero entero.");
-			//Limpio el buffer de entrada.
-			while(getchar()!='\n');
-		}else{
-			flag = false;
-		}
-	}
-	
-	//Asignacion de informacion para la estructura intType.
-	itNumber.iNodeType = INT;
-	itNumber.iValue = iNumber;
-	
-	return itNumber;
-}//Funciona.
 
 //Ingresa un solo caracter.
 struct charType insertChar(){
@@ -62,12 +39,6 @@ struct stringType insertString(){
 }//Funciona.
 
 //METODOS DE IMPRESION.
-//Imprime la estructura intType.
-void intShow(struct intType itNumber){
-	printf("\nNumero: %d", itNumber.iValue);
-	printf("\nTipo INT: %d", itNumber.iNodeType);
-}//Funciona.
-
 //Imprime la estructura charType.
 void charShow(struct charType ctChar){
 	printf("\nCaracter: %c",ctChar.cValue);
@@ -101,47 +72,38 @@ bool option(){
 }//Funciona.
 
 //METODOS INDIVIDUALES DEL AUTOMATA.
-void loadStates(){
-	struct dataType* temp = (struct setType*) malloc( sizeof(struct setType));
-	struct dataType* father = (struct setType*) malloc(sizeof(struct setType));
-		
-	temp = father = NULL;
-
-	printf("\nEstado/os del automata: ");
+void loadStates(dataPtr rootTemp){
+	printf("\nEstado/os del automata: \n\nQ = { ");
 	do{
+		printf("\ninput: ");
+		stringPtr in = (stringPtr) malloc(sizeof(stringPtr));
 		
 		fflush(stdin);
-		printf("\nIngrese estado: ");
-		struct stringType in = insertString();
+		gets(in->stChais); 
+		printf("load: %s", in->stChais);
 		
-		//printf("---------->pasa");
-		father->dtDatum_L = in;
-		father->dtNext_R = NULL;
-
-		stringShow(in);
+		
+		
 	} while (option());	
 }
 
 //METODOS PARA EL ARBOL.
 void initializeTree(){
-	stRoot = NULL;
+	
 }
 
 bool isEmpty(){
-	if ( stRoot == NULL){
+	/*if ( stRoot == NULL){
 		return true;
 	}else{
 		return false;
-	}
+	}*/
 }
 
 //Carga el arbol.
 void loadAll(){
-	struct setType* rootBU = (struct setType*) malloc( sizeof(struct setType));
-	rootBU = stRoot;
-	loadStates();
-
-	stRoot = rootBU;
+	dataPtr root = (dataPtr) malloc(sizeof(dataPtr));
+	loadStates(root);
 }
 //Muestra el arbol.
 void showAll(){
