@@ -16,9 +16,9 @@ typedef struct charType* charPtr;
 //Estructura de conjunto para armar los padres de cada conjunto de la 5-upla.
 //Representa el arbol.
 struct dataType{
-	int iNodeType;		//Codigo del tipo de dato.
+	int iNodeType;				//Codigo del tipo de dato.
 	struct stringType* dtDatum;	//Hijo izquierdo.
-	struct dataType* dtNext;		//Hijo derecho.
+	struct dataType* dtNext;	//Hijo derecho.
 };
 
 //Raiz del arbol.

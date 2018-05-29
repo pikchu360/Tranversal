@@ -26,7 +26,7 @@ struct charType insertChar(){
 struct stringType insertString(){
 	struct stringType chais;
 	
-	//limpio el buffer.
+	//limpio el buffer...
 	//while(getchar()!='\n');
 	fflush(stdin);
 	//printf("\n\nIngresa una cadena: ");

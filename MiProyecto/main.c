@@ -3,9 +3,9 @@
 
 int main(){
 	//AutomataFinito A;
-	//Inicializo el arbol.
+	//Inicializo el arbol. coso.
 	ptrRoot raiz = NULL;
-	
+
 	loadAll(&raiz);
 	showAll(raiz);
 	
