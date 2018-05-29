@@ -31,7 +31,7 @@ void MenuState(char* ReturnStates){
 				Flag = getchar();
 				if((Flag == 'n') || (Flag== 'N') ){
 					entrada = 1	;
-					strcat(States,"_.");}
+					strcat(States,"_;.");}
 			}
 		}		
 		printf("Estos son sus Estados S/N: %s", States);
@@ -53,7 +53,7 @@ void MenuAlpha(char* Alpha){
 	char Aux[5];
 	char Aux2[5];
 	int entrada = 0;
-	int i=1;
+	
 	
 	printf ("\nCargue su primer simbolo del alfabeto:   ");
 	do {

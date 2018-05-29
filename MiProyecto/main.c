@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "AutomataFinito.h"
 
-int main(){	
+int main(){
 	//AutomataFinito A;
 	//Inicializo el arbol. coso.
 	ptrRoot raiz = NULL;
