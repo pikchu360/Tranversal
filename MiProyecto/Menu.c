@@ -126,7 +126,7 @@ void MenuFinish(char* States,char* FStates){ //Load Final State
 	strcpy(FStates,FinalState);	
 }
 
-void MenuDelta(char* States, char* Alpha){//load function Delta
+void  MenuDelta(char* States, char* Alpha, char* DeltaFunction ){//load function Delta
 	
 	char TransitionDelta[1000];
 	int Salida=1;
@@ -160,7 +160,7 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 					do{						
 						char Aux[10];
 						fflush(stdout);
-						printf ("\nCargue una transicion de Delta para (%s , %c) (el vacio es _ ):   ", AuxS,AuxA[j]);	
+						printf ("\nCargue una transicion de Delta para (%s , %c) (el vacio es '_' ):   ", AuxS,AuxA[j]);	
 						fflush(stdin);
 						
 						do{
@@ -171,7 +171,7 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 							strcat(AuxTransition,"->");							
 							intro(Aux);
 							
-							if (strstr(States,Aux)!= NULL ){ // cargar transicion con Vacio _ usar guion bajo
+							if (strstr(States,Aux)!= NULL ){ // cargar transicion a Vacio _ usar guion bajo
 								strcat(AuxTransition,Aux);
 								if (strstr(TransitionDelta,AuxTransition)== NULL){
 									strcat(TransitionDelta,AuxTransition);
@@ -203,5 +203,6 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 		i++;
 	}
 	strcat(TransitionDelta,".");
+	strcpy(DeltaFunction,TransitionDelta);
 }
 
