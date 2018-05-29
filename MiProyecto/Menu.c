@@ -31,7 +31,7 @@ void MenuState(char* ReturnStates){
 				Flag = getchar();
 				if((Flag == 'n') || (Flag== 'N') ){
 					entrada = 1	;
-					strcat(States,"\n");}
+					strcat(States,"_.");}
 			}
 		}		
 		printf("Estos son sus Estados S/N: %s", States);
@@ -42,7 +42,6 @@ void MenuState(char* ReturnStates){
 			Salida = 0;
 		
 	}while (Salida != 0);	
-	strcat(States,"_.")
 	strcpy(ReturnStates,States);
 }
 
@@ -112,7 +111,7 @@ void MenuFinish(char* States,char* FStates){ //Load Final State
 				Flag = getchar();
 				if((Flag == 'n') || (Flag== 'N') ){
 					entrada = 1	;
-					strcat(FinalState,"\n");
+					strcat(FinalState,".");
 				}
 			}
 		}
@@ -123,7 +122,7 @@ void MenuFinish(char* States,char* FStates){ //Load Final State
 		Flag = getchar();
 		if((Flag == 's') || (Flag == 'S'))
 			Salida = 0;
-	}while (Salida != 0);	
+	}while (Salida != 0);		
 	strcpy(FStates,FinalState);	
 }
 
@@ -180,9 +179,8 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 									fflush(stdin);
 									Flag = getchar();
 									if((Flag == 'n') || (Flag== 'N') ){
-										Salida = 0;
-										strcat(States,"\n");}
-									else Salida = 1;
+										Salida = 0;										
+									}else {Salida = 1;}
 									Salida2= 0;
 									
 								}else {
@@ -204,5 +202,6 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 		
 		i++;
 	}
+	strcat(TransitionDelta,".");
 }
 
