@@ -1,4 +1,4 @@
-#include "MENU.h"
+#include "Menu.h"
 #include "AutomataFinito.h"
 #include <stdbool.h>
 #include <stdlib.h>
@@ -42,6 +42,7 @@ void MenuState(char* ReturnStates){
 			Salida = 0;
 		
 	}while (Salida != 0);	
+	strcat(States,"_.")
 	strcpy(ReturnStates,States);
 }
 
@@ -140,7 +141,7 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 		int IniAux=0;
 		memset(AuxS,'\0',strlen(AuxS));
 		while ( k<strlen(States)){
-			if ((States[k] != ';') && (States[k] != '.') && (States[k] != '\n')){				
+			if ((States[k] != ';') && (States[k] != '.') && (States[k] != '\n') && (States[k] != '_')){				
 				fflush(stdin);
 				AuxS[IniAux]=States[k];
 				k++;
@@ -155,29 +156,40 @@ void MenuDelta(char* States, char* Alpha){//load function Delta
 			for (int j=0; j<strlen(Alpha); j++){
 				if ((Alpha[j] != ';') && (Alpha[j] != '.') && (Alpha[j] != '\n')){
 					char AuxA[10];
+					char AuxTransition[20];
 					AuxA[j]=Alpha[j];
 					do{						
 						char Aux[10];
 						fflush(stdout);
-						printf ("\nCargue una transicion de Delta (%s , %c) :   ", AuxS,AuxA[j]);	
+						printf ("\nCargue una transicion de Delta para (%s , %c) (el vacio es _ ):   ", AuxS,AuxA[j]);	
 						fflush(stdin);
-						strcat(TransitionDelta, AuxS);
-						strcat(TransitionDelta,",");						
-						TransitionDelta[strlen(TransitionDelta)]=AuxA[j];
-						strcat(TransitionDelta,"->");
+						
 						do{
+							memset(AuxTransition,'\0',strlen(AuxTransition));
+							strcat(AuxTransition, AuxS);
+							strcat(AuxTransition,",");						
+							AuxTransition[strlen(AuxTransition)]=AuxA[j];
+							strcat(AuxTransition,"->");							
 							intro(Aux);
-							if (strstr(States,Aux)!= NULL ){
-								strcat(TransitionDelta,Aux);
-								fflush(stdout);
-								printf("\nDesea cargar otra Transicion para %s , %c  (Si/No):  " , AuxS,AuxA[j]);
-								fflush(stdin);
-								Flag = getchar();
-								if((Flag == 'n') || (Flag== 'N') ){
-									Salida = 0;
-									strcat(States,"\n");}
-								else Salida = 1;
-								Salida2= 0;
+							
+							if (strstr(States,Aux)!= NULL ){ // cargar transicion con Vacio _ usar guion bajo
+								strcat(AuxTransition,Aux);
+								if (strstr(TransitionDelta,AuxTransition)== NULL){
+									strcat(TransitionDelta,AuxTransition);
+									printf("\nDesea cargar otra Transicion para %s , %c  (Si/No):  " , AuxS,AuxA[j]);
+									fflush(stdin);
+									Flag = getchar();
+									if((Flag == 'n') || (Flag== 'N') ){
+										Salida = 0;
+										strcat(States,"\n");}
+									else Salida = 1;
+									Salida2= 0;
+									
+								}else {
+										fflush(stdout);
+										printf ("\nLa Transicion ya existe  ");
+										Salida2 = 1;	
+								}
 							}else {
 								fflush(stdout);
 								printf ("\nCargue un estado valido:   ");
