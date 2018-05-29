@@ -71,8 +71,38 @@ bool option(){
 	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' || opt[0]!='N' );
 }//Funciona.
 
+//Metodo para cargar un nodo.
+void insert( ptrRoot *root, stringPtr input ){
+	ptrRoot temp = (*root), newFather;
+	if( (*root)==NULL ){
+		*root=malloc(sizeof(dataPtr));
+		//Si hay memoria lo asigna.
+		if (*root != NULL) { 
+			(*root)->iNodeType = SET;
+			(*root)->dtDatum = input;
+			(*root)->dtNext = NULL;
+			
+		} else {
+			printf("\nNo se inserto %s. No hay memoria disponible.n", input->stChais);
+		} 
+	}else{
+		while( (*root)->dtNext!=NULL ){
+			if( (*root)->dtDatum != NULL){
+				(*root) = (*root)->dtNext;
+			}
+		}
+	
+		newFather = malloc(sizeof(dataPtr));
+		newFather->dtDatum = input;
+		newFather->dtNext = NULL;
+
+		(*root)->dtNext = newFather;
+		(*root) = temp;
+	}
+}//Funciona.
+
 //METODOS INDIVIDUALES DEL AUTOMATA.
-void loadStates(dataPtr rootTemp){
+void loadStates(ptrRoot *root){
 	printf("\nEstado/os del automata: \n\nQ = { ");
 	do{
 		printf("\ninput: ");
@@ -80,38 +110,42 @@ void loadStates(dataPtr rootTemp){
 		
 		fflush(stdin);
 		gets(in->stChais); 
-		printf("load: %s", in->stChais);
+		in->iNodeType = STRING;
 		
-		
-		
-	} while (option());	
+		insert(& (*root), in);		
+	} while (option());
 }
 
 //METODOS PARA EL ARBOL.
-void initializeTree(){
-	
-}
-
-bool isEmpty(){
-	/*if ( stRoot == NULL){
-		return true;
-	}else{
-		return false;
-	}*/
+void initializeTree(ptrRoot *root){
+	root = NULL;
 }
 
 //Carga el arbol.
-void loadAll(){
-	dataPtr root = (dataPtr) malloc(sizeof(dataPtr));
-	loadStates(root);
+void loadAll(ptrRoot *root){
+	loadStates( &(*root) );
 }
-//Muestra el arbol.
-void showAll(){
+
+//Metodos para imprimir arbol.
+void inOrder(ptrRoot node){
+	if( node!=NULL ){
+		//inOrder(node->dtDatum);
+		printThree(node);
+		inOrder(node->dtNext);
+	}
+}
+
+void printThree(ptrRoot node){
 	
+	printf(" %s ",node->dtDatum->stChais);
+
 }
 
-/*
+void showStates(ptrRoot root){
+	inOrder(root);
+}
 
-
-
-*/
+//Muestra el arbol.
+void showAll(ptrRoot root){
+	showStates(root);
+}

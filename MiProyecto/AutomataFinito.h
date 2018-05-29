@@ -9,7 +9,7 @@
 #define SET 1034
 
 //Declaracion de los punteros correspondientes.
-typedef struct dataType* dataPtr;
+typedef struct dataType dataPtr;
 typedef struct stringType* stringPtr;
 typedef struct charType* charPtr;
 
@@ -17,10 +17,12 @@ typedef struct charType* charPtr;
 //Representa el arbol.
 struct dataType{
 	int iNodeType;		//Codigo del tipo de dato.
-	dataPtr dtDatum;	//Hijo izquierdo.
-	dataPtr dtNext;		//Hijo derecho.
+	struct stringType* dtDatum;	//Hijo izquierdo.
+	struct dataType* dtNext;		//Hijo derecho.
 };
 
+//Raiz del arbol.
+typedef dataPtr *ptrRoot;
 
 //Declaro los tipos de datos.
 
@@ -46,7 +48,7 @@ void charShow();
 void stringShow();
 
 //Metodos para cargar el automata.
-void loadStates();
+void loadStates(ptrRoot *root);
 void loadAlphabet();
 void loadInitialState();
 void loadStateOfAcceptance();
@@ -60,7 +62,7 @@ void showStateOfAcceptance();
 void showTransitions();
 
 //Methos finish
-void loadAll();
-void showAll();
+void loadAll(ptrRoot *root);
+void showAll(ptrRoot root);
 
 #endif
