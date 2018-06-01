@@ -11,10 +11,11 @@ int main(){
 	
 	loadAll(&raiz);
 	showAll(raiz);
-	/*
-	system("clear");
+	
+	//system("clear");
 	char cadena[100];
 	int op;
+	
 	menu();
 	do{
 		
@@ -38,7 +39,7 @@ int main(){
 			printf("Error. Ingrese un numero dentro del rango:");
 		}
 	}while( op!=3 );
-	*/
+	
 	printf("\n\n\t___________TEORIA DE LA COMPUTACION I___________");
 	return 0;
 }

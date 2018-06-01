@@ -141,28 +141,56 @@ void insert( child *root, struct stringType* input ){
 	}
 }//Funciona.
 
+//________________________________________________________
 //Evalua si la cadena cumple con los simbolos del alfabeto.
-//bool valueChais(char *str, char *alpha){
-//}
+
+bool validateChais(char *str, char *alpha){
+	int i=0;    
+	bool flag = true;
+	
+	while(i<strlen(str)){
+		flag= false;
+		for(int j = 0; j<strlen(alpha);j++){
+			if( str[i]==alpha[j] ){
+				flag=true;
+			}   	 
+		}
+		if (flag){
+			i++;
+		}else{
+			i=strlen(str);
+		}
+	}
+	return flag;
+}//Funciona.
 
 void inputStr(char* Aux){
 	fflush(stdin);
 	do{
 		memset(Aux, '\0', strlen(Aux));
-		gets(Aux);
+		scanf("%s", Aux);
 		if(strlen(Aux)==0){
 			printf(" Error. Ingrese caracter: ");
 		}
-	} while(strlen(Aux)==0);
-	strcat(Aux,";");
-}
+		fflush(stdin);
+	} while(strlen(Aux)==0 );
+}//Funciona.
 
 void evalueChais(three root){ 		//Raiz del arbol.
 	
-	char chais[50];
+	child fatherAlpha = root->dtNext;
+	char alpha[20], chais[50];
+	
+	memset(&alpha, '\0', strlen(alpha));
+	getAlpha(&alpha, fatherAlpha->dtDatum);
+
 	printf("\nIngrese una cadena: ");
 	inputStr(chais);
 	
+	if(validateChais(chais, alpha)){
+		printf("\nCadena Aceptada (dentro del alfabeto)");
+		//Code evalTrans.
+	}else{
+		printf("\nCadena No aceptada Aceptada (dentro del alfabeto)");
+	}
 }
-//s( s(q,a),v) = { }
-//s(q0,w)=p | p ->F 
