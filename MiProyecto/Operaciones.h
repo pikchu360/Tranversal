@@ -10,5 +10,6 @@ void copyChais(char *str, char src[], int init, int end);
 void getStates(char *ReturnStates, child root);
 void getAlpha(char *ReturnTransitions, child root);
 void insert( child *root, struct stringType* input );
+void evalueChais(three root);
 
 #endif

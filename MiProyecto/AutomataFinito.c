@@ -93,7 +93,8 @@ void loadStateOfAcceptance(child *root, child set){
 }//Funciona.
 
 void loadTransitions(child *root, child set){
-	char transitions[1000], states[100], alpha[50];
+	char transitions[1000], states[100], alpha[50], str[20];
+	int init = 0, iniStr=0;
 	
 	memset(&transitions, '\0', strlen(transitions));
 	memset(&states, '\0', strlen(states));
@@ -104,8 +105,31 @@ void loadTransitions(child *root, child set){
 	getAlpha(&alpha, set->dtDatum);
 	
 	MenuDelta(&transitions, states, alpha);
-	//printf("\n Delta: %s ", transitions);
-}
+	printf("\n Delta: %s \n", transitions);
+	
+	for(int i = 0; i < strlen(transitions); i++)	{	//Recorro status como si fuera array.
+		if(transitions[i]==';'){						//Cuando encuentra un ';', Nueva Transision.
+			for(int k=init; k<=i; k++){
+				if( transitions[k]==':' || transitions[k]=='>' || transitions[k]==';'){
+					fflush(stdin);				//Limpio el buffer de entrada.
+					if(k-iniStr==1){			//Control para saber si es de tipo char o string. si es 1 es de tipo char.
+						struct charType *in = (struct charType*) malloc(sizeof(struct charType));
+						copyChais(&(*in).cValue, transitions, iniStr, k);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+						(*in).iNodeType = CHAR;							//Asignacion de codigo del tipo de dato.
+						insert(&(*root), in);							//Inserta en el arbol el dato de tipo charType.
+					}else{
+						struct stringType *in = (struct stringType*) malloc(sizeof(struct stringType));
+						copyChais(&(*in).stChais, transitions, iniStr, k);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+						(*in).iNodeType = STRING;						//Asignacion de codigo del tipo de dato.
+						insert(&(*root), in);							//Inserta en el arbol el dato de tipo stringType.
+					}
+					iniStr=k+1;
+				}
+			}//Fin extracion de cadena o caracter.	
+			init = i+1;		//Incrementa el indice de indicando la posicion de donde comienza el siguiente estado.
+		}
+	}
+}//Funciona.
 
 //==============================================================================
 //METODOS DE IMPRESION.
@@ -230,7 +254,6 @@ void loadAll(three *root){
 		default:
 			break;
 		}
-		//aux = malloc(sizeof(three));
 		index++;
 	}
 	
@@ -251,8 +274,8 @@ void showAll(three root){
 	root = root->dtNext;
 	showStateOfAcceptance(root->dtDatum);
 	
-	/*	root = root->dtNext;
-	showTransitions(root->dtDatum);*/
+	root = root->dtNext;
+	showTransitions(root->dtDatum);
 	
 	printf("\n\n________________________________________________________________________\n\n\n");
 }

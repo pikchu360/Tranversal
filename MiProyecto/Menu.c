@@ -13,7 +13,7 @@ bool option(){
 	char opt[2];
 	//printf("\nContinuar carga? S/n: ");
 	do{
-		fflush(stdin);
+		memset(opt, '\0',strlen(opt));
 		gets(opt);
 		if ( opt[0]=='s' || opt[0]=='S') {
 			return true;
@@ -23,15 +23,21 @@ bool option(){
 			return false;
 		}else {
 			printf("\tError. Ingrese 's' o 'n': ");
-			memset(&opt, '\0',strlen(opt));
+			memset(opt, '\0',strlen(opt));
+			printf(" %s ", opt);
 		}
-		fflush(stdin);
 	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' && opt[0]!='N' );
 }//Funciona.
 
 void intro(char* Aux){
 	fflush(stdin);
-	gets(Aux);
+	do{
+		memset(Aux, '\0', strlen(Aux));
+		gets(Aux);
+		if(strlen(Aux)==0){
+			printf(" Error. Ingrese caracter: ");
+		}
+	} while(strlen(Aux)==0);
 	strcat(Aux,";");
 }
 void intoDelta(char* str, char *states){
@@ -55,6 +61,7 @@ void MenuState(char* ReturnStates){
 	int Salida=1;
 	char States[100];
 	do{				
+		memset(&States,'\0', strlen(States));
 		char Aux[5];
 		int entrada = 0;
 		printf ("\nCargue el estado inicial: ");
@@ -82,10 +89,10 @@ void MenuState(char* ReturnStates){
 void MenuAlpha(char* Alpha){	
 	int salida;
 	char Symbol[100];
-	memset(&Symbol,'\0', strlen(Symbol));	
 	do{
 		char Aux[5];
 		int entrada = 0;
+		memset(&Symbol,'\0', strlen(Symbol));	
 		while (entrada == 0){
 			printf("Cargue simbolo de su AF: ");
 			intro(Aux);
@@ -117,6 +124,7 @@ void MenuFinish(char* FStates, char* States){ //Load Final State
 	do{		
 		char Aux[5];
 		int entrada = 0;
+		memset(&FinalState,'\0', strlen(FinalState));
 		while (entrada == 0){
 			printf("Nuevo estado final: ");
 			intro(Aux);
@@ -143,128 +151,67 @@ void MenuFinish(char* FStates, char* States){ //Load Final State
 
 void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function Delta
 	char delta[1000], origin[50], destinations[50], state[20], in[10];
-	bool entrada;
+	bool entrada, ex;
 	int init = 0;
-	memset(&delta ,'\0',strlen(delta));		
 	
 	do{
+		memset(&delta ,'\0',strlen(delta));
 		for(int iSt = 0; iSt < strlen(States); iSt++){
 			//Veo si completo un estado.
 			if(States[iSt]==';'){
+				memset(&state, '\0', strlen(state));
 				copyChais(&state, States, init, iSt);		//obtengo 1 estado.
-				
-				//Analizo el estado con cada simbolo del alfabeto.
-				for(int iAl = 0; iAl < strlen(Alpha); iAl++){
-					//Veo si compleeto el alfabeto.
-					if( Alpha[iAl]!=';' && Alpha[iAl]!='.'){
-						memset(&origin ,'\0',strlen(origin));
-						memset(&destinations ,'\0',strlen(destinations));
-						//Armado de el punto de partida. Ej (q0:a).
-						strcat(origin, state);
-						strcat(origin, ":");
-						strcat(origin, ""+Alpha[iAl]);		//Forma de casting para charToString
-						strcat(origin, "->");
-						
-						//Ciclo de carga de destino de la transicion.
-						entrada=true;
-						while(entrada){
-							memset(&in, '\0', strlen(in));
-							printf("Cargue Transicion ('_'=vacio): (%s , %c)->", state, Alpha[iAl]);
-							intoDelta(in,States);
-							if( strstr(destinations, in)==NULL && strlen(state)==strlen(in)){
-								strcat(destinations, in);
-								strcat(destinations, ":");
-							}else{
-								printf("Error. Ya existe esa transicion! Cargue una nueva...\n");
-							}
-							printf("\t\tContinuar carga? S/N: ");
-							if( !option() ){
-								entrada = false	;
+				if(strstr(state, "_")==NULL){
+					//Analizo el estado con cada simbolo del alfabeto.
+					for(int iAl = 0; iAl < strlen(Alpha); iAl++){
+						//Veo si compleeto el alfabeto.
+						if( Alpha[iAl]!=';' && Alpha[iAl]!='.'){
+							memset(&origin ,'\0',strlen(origin));
+							memset(&destinations ,'\0',strlen(destinations));
+							//Armado de el punto de partida. Ej (q0:a).
+							strcat(origin, state);
+							strcat(origin, ":");
+							origin[strlen(origin)] = Alpha[iAl];
+							strcat(origin, ">");
+							
+							//Ciclo de carga de destino de la transicion.
+							entrada=true;
+							while(entrada){
+								memset(&in, '\0', strlen(in));
+								printf("Cargue Transicion ('_'=vacio): (%s , %c)->", state, Alpha[iAl]);
+								intoDelta(in,States);
+								if( strstr(destinations, in)==NULL && strlen(state)==strlen(in)){
+									strcat(in, ":");
+									strcat(destinations, in);	
+								}else{
+									printf("Error. Ya existe esa transicion! Cargue una nueva...\n");
+								}
+								printf("\t\tContinuar carga? S/N: ");
+								if( !option() ){
+									destinations[strlen(destinations+1)] = ';';
+									entrada = false	;
+								}
 							}
 						}
-					}
-				}//For del alfabeto.
+					}//For del alfabeto.
+				}
+				init = iSt+1;
+				strcat(delta, origin);
+				strcat(delta, destinations);
 			}
 		}//For de los estados.
 		printf("\t¿Son sus Transiciones? S={ %s } -> S/N: ", delta);
 	}while( !option() );
-	
-	//strcpy(DeltaFunction,delta);
-	/*char TransitionDelta[1000];
-	int Salida=1;
-	int Salida2=1;		
-	char Flag = 'S';
-	int i=0;
-	while ( i<strlen(States)){
-	int k = i;
-	char AuxS[10];
-	
-	int IniAux=0;
-	memset(AuxS,'\0',strlen(AuxS));
-	while ( k<strlen(States)){
-	if ((States[k] != ';') && (States[k] != '.') && (States[k] != '\n') && (States[k] != '_')){				
-	fflush(stdin);
-	AuxS[IniAux]=States[k];
-	k++;
-	IniAux++;
-	}else {
-	i=k;
-	k=strlen(States)+1;
-	}		
-	}
-	if (strlen(AuxS) != 0){
-	
-	for (int j=0; j<strlen(Alpha); j++){
-	if ((Alpha[j] != ';') && (Alpha[j] != '.') && (Alpha[j] != '\n')){
-	char AuxA[10];
-	char AuxTransition[20];
-	AuxA[j]=Alpha[j];
-	do{						
-	char Aux[10];
-	fflush(stdout);
-	printf ("\nCargue transicion ('_'=vacio): (%s , %c) -> ", AuxS,AuxA[j]);	
-	fflush(stdin);
-	
-	do{
-	memset(AuxTransition,'\0',strlen(AuxTransition));
-	strcat(AuxTransition, AuxS);
-	strcat(AuxTransition,",");						
-	AuxTransition[strlen(AuxTransition)]=AuxA[j];
-	strcat(AuxTransition,"->");							
-	intro(Aux);
-	
-	if (strstr(States,Aux)!= NULL ){ // cargar transicion a Vacio _ usar guion bajo
-	strcat(AuxTransition,Aux);
-	if (strstr(TransitionDelta,AuxTransition)== NULL){
-	strcat(TransitionDelta,AuxTransition);
-	printf("\nNueva Transicion para (%s , %c) ?  (Si/No):  " , AuxS,AuxA[j]);
-	fflush(stdin);
-	Flag = getchar();
-	if((Flag == 'n') || (Flag== 'N') ){
-	Salida = 0;										
-	}else {Salida = 1;}
-	Salida2= 0;
-	
-	}else {
-	fflush(stdout);
-	printf ("\nError. La Transicion ya existe!!  ");
-	Salida2 = 1;	
-	}
-	}else {
-	fflush(stdout);
-	printf ("\nCargue un estado valido:   ");
-	Salida2 = 1;
-	}
-	}while(Salida2 != 0);
-	
-	}while (Salida != 0);			
-	}
-	}
-	}
-	
-	i++;
-	}
-	strcat(TransitionDelta,".");
-	strcpy(DeltaFunction,TransitionDelta);*/
-}
+	strcpy(DeltaFunction, delta);
+}//Funciona.
 
+//Realizar.
+void menu(){
+	
+	int op;
+	printf("\nFUNCIONES:");
+	printf("\n\n\t 1-Ingresar cadena para evaluar AF");
+	printf("\n\t 2-Mostrar el Automata Finito");
+	printf("\n\t 3-Salir");
+	
+}

@@ -61,7 +61,7 @@ void copyChais(char *str, char src[], int init, int end){
 	
 	sAux[first] = '\0';					//Agrego fin de cadena en sAux.
 	strcat(str,sAux);					//Retorno sAux.
-}//Funciona.
+}//Funciona.s
 
 //Metodo que retorna, por parametro, un string de todos los estados del AF.
 void getStates(char *ReturnStates, child root){
@@ -76,7 +76,31 @@ void getStates(char *ReturnStates, child root){
 }//Funciona.
 
 //Metodo que retorna en un string con las transisiones del AF.
-void getAlpha(char *ReturnTransitions, child root){
+void getAlpha(char *ReturnAlpha, child root){
+	struct stringType *str = malloc(sizeof(struct stringType));
+	while(root!=NULL){								//Recorro el arbol de los estados hacia derecha.
+		str = root->dtDatum;						//Asigno el registro del hijo izquierdo de SET a una variable.
+		root = root->dtNext;						//Avanza a derecha el puntero.
+		strcat(ReturnAlpha, str->stChais);			//Concatenacion.
+		strcat(ReturnAlpha, ";");					//Concatenacion para poner un alerta.
+	}
+	strcat(ReturnAlpha, ".");						//Concatenacion de fin del arbol de estados.
+}//Funciona.
+
+//Metodo que retorna en un string con las transisiones del AF.
+void getFinish(char *ReturnFinish, child root){
+	struct stringType *str = malloc(sizeof(struct stringType));
+	while(root!=NULL){								//Recorro el arbol de los estados hacia derecha.
+		str = root->dtDatum;						//Asigno el registro del hijo izquierdo de SET a una variable.
+		root = root->dtNext;						//Avanza a derecha el puntero.
+		strcat(ReturnFinish, str->stChais);			//Concatenacion.
+		strcat(ReturnFinish, ";");					//Concatenacion para poner un alerta.
+	}
+	strcat(ReturnFinish, ".");						//Concatenacion de fin del arbol de estados.
+}//Funciona.
+
+//Metodo que retorna en un string con las transisiones del AF.
+void getTransation(char *ReturnTransitions, child root){
 	struct stringType *str = malloc(sizeof(struct stringType));
 	while(root!=NULL){								//Recorro el arbol de los estados hacia derecha.
 		str = root->dtDatum;						//Asigno el registro del hijo izquierdo de SET a una variable.
@@ -117,3 +141,28 @@ void insert( child *root, struct stringType* input ){
 	}
 }//Funciona.
 
+//Evalua si la cadena cumple con los simbolos del alfabeto.
+//bool valueChais(char *str, char *alpha){
+//}
+
+void inputStr(char* Aux){
+	fflush(stdin);
+	do{
+		memset(Aux, '\0', strlen(Aux));
+		gets(Aux);
+		if(strlen(Aux)==0){
+			printf(" Error. Ingrese caracter: ");
+		}
+	} while(strlen(Aux)==0);
+	strcat(Aux,";");
+}
+
+void evalueChais(three root){ 		//Raiz del arbol.
+	
+	char chais[50];
+	printf("\nIngrese una cadena: ");
+	inputStr(chais);
+	
+}
+//s( s(q,a),v) = { }
+//s(q0,w)=p | p ->F 
