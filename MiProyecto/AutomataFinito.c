@@ -1,151 +1,258 @@
 #include "AutomataFinito.h"
+#include "Menu.h"
+#include "Operaciones.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
-//METODOS PARA LECTURA.
+//______________________________________________
+//METODOS PARA CARGAR CADA CONJUNTO DEL AUTOMATA.
 
-//Ingresa un solo caracter.
-struct charType insertChar(){
-	struct charType ctChar;
+void loadStates(child *root){
+	char status[100];		//String donde se guardaran los estados ingresados.
+	int init=0;				//indice para hacer una copia correcta.
 	
-	//limpio el buffer.
-	while(getchar()!='\n');
+	printf("\n________________________________________________________________________");
+	printf("\nEstado/os del automata: \n\n");
 	
-	printf("\n\nIngrese un caracter: ");
-	
-	//Asignacion del aracter a la estructura charType.
-	ctChar.iNodeType = CHAR;
-	ctChar.cValue = getchar();
-	
-	return ctChar;
-}//Funciona.
-
-//Ingresa un cadena.
-struct stringType insertString(){
-	struct stringType chais;
-	
-	//limpio el buffer...
-	//while(getchar()!='\n');
-	fflush(stdin);
-	//printf("\n\nIngresa una cadena: ");
-	
-	//Asignacion de valores para la estructura.
-	gets(chais.stChais);
-	chais.iNodeType = STRING;
-	
-	return chais;
-}//Funciona.
-
-//METODOS DE IMPRESION.
-//Imprime la estructura charType.
-void charShow(struct charType ctChar){
-	printf("\nCaracter: %c",ctChar.cValue);
-	printf("\nTipo CHAR: %d", ctChar.iNodeType);
-	
-}//Funciona.
-
-//Imprime la estructura stringType.
-void stringShow(struct stringType stString){
-	printf("\nCadena: %s", stString.stChais);
-	printf("\nTipo STRING: %d", stString.iNodeType);
-}//Funciona.
-
-//Opcion para continuar o no el ingreso.
-bool option(){
-	char opt[2];
-	printf("\nContinuar carga? S/n: ");
-	do{
-		fflush(stdin);
-		gets(opt);
-		if ( opt[0]=='s' || opt[0]=='S') {
-			return true;
+	MenuState(&status);							//Guarda en status todos los estados ingresados, separado por un ';'.
+	for(int i = 0; i < strlen(status); i++)	{	//Recorro status como si fuera array.
+		if(status[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
+			fflush(stdin);						//Limpio el buffer de entrada.
+			if(i-init==1){						//Control para saber si es de tipo char o string. si es 1 es de tipo char.
+				struct charType *in = (struct charType*) malloc(sizeof(struct charType));
+				copyChais(&(*in).cValue, status, init, i);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+				(*in).iNodeType = CHAR;							//Asignacion de codigo del tipo de dato.
+				insert(&(*root), in);							//Inserta en el arbol el dato de tipo charType.
+			}else{
+				struct stringType *in = (struct stringType*) malloc(sizeof(struct stringType));
+				copyChais(&(*in).stChais, status, init, i);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+				(*in).iNodeType = STRING;						//Asignacion de codigo del tipo de dato.
+				insert(&(*root), in);							//Inserta en el arbol el dato de tipo stringType.
+			}	
+			init = i+1;		//Incrementa el indice de indicando la posicion de donde comienza el siguiente estado.
 		}
-		else if (opt[0] == 'n' || opt[0]=='N')
-		{
-			return false;
-		}else {
-			printf("\nError. Ingrese s/n: ");
-		}
-	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' || opt[0]!='N' );
+	}	
 }//Funciona.
 
-//Metodo para cargar un nodo.
-void insert( ptrRoot *root, stringPtr input ){
-	ptrRoot temp = (*root), newFather;
-	if( (*root)==NULL ){
-		*root=malloc(sizeof(dataPtr));
-		//Si hay memoria lo asigna.
-		if (*root != NULL) { 
-			(*root)->iNodeType = SET;
-			(*root)->dtDatum = input;
-			(*root)->dtNext = NULL;
-			
-		} else {
-			printf("\nNo se inserto %s. No hay memoria disponible.n", input->stChais);
-		} 
-	}else{
-		while( (*root)->dtNext!=NULL ){
-			if( (*root)->dtDatum != NULL){
-				(*root) = (*root)->dtNext;
-			}
-		}
+void loadAlphabet(child *root){
+	char alph[100];			//Variable que guardara el alfabeto.
+	int init=0;				//indice para hacer una copia correcta.
 	
-		newFather = malloc(sizeof(dataPtr));
-		newFather->dtDatum = input;
-		newFather->dtNext = NULL;
-
-		(*root)->dtNext = newFather;
-		(*root) = temp;
+	printf("\n________________________________________________________________________");
+	printf("\nAlfabeto del automata: \n\n\n");
+	MenuAlpha(&alph);
+	for(int i = 0; i < strlen(alph); i++)	{	//Recorro status como si fuera array.
+		if(alph[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
+			fflush(stdin);						//Limpio el buffer de entrada.
+			struct charType *in = (struct charType*) malloc(sizeof(struct charType));
+			copyChais(&(*in).cValue, alph, init, i);	//Carga el valor del caracter alpha en el registro de tipo charType.
+			(*in).iNodeType = CHAR;						//Asignacion de codigo del tipo de dato.
+			insert(&(*root), in);						//Inserta el registro en el arbol.
+			init = i+1;				//Incremento del indice necesario para la copia de caracteres hacia el registro de tipo charType.
+		}
 	}
 }//Funciona.
 
-//METODOS INDIVIDUALES DEL AUTOMATA.
-void loadStates(ptrRoot *root){
-	printf("\nEstado/os del automata: \n\nQ = { ");
-	do{
-		printf("\ninput: ");
-		stringPtr in = (stringPtr) malloc(sizeof(stringPtr));
-		
-		fflush(stdin);
-		gets(in->stChais); 
-		in->iNodeType = STRING;
-		
-		insert(& (*root), in);		
-	} while (option());
+void loadInitialState(child *root, child set){
+	struct stringType *initialState = malloc(sizeof(struct stringType));
+	initialState = set->dtDatum;
+	insert(&(*root), initialState);
+}//Funciona.
+
+void loadStateOfAcceptance(child *root, child set){
+	char states[100], accepted[50];			//string para los estados y otro para los estados de aceptacion.
+	int init=0;									//indice para hacer una copia correcta.
+	
+	memset(&states, '\0', strlen(states));		//Limpio variables. 
+	memset(&accepted, '\0', strlen(accepted));	//Limpio variables. 
+	
+	printf("\n________________________________________________________________________");
+	printf("\nEstado/os de Aceptacion: \n\n\n");	
+	getStates(&states, set);			//Obtencion de los estados desde el arbol.
+	MenuFinish(&accepted, states);				//Separa los que son de aceptacion segun el usuario.
+	
+	for(int i = 0; i < strlen(accepted); i++)	{	//Recorro status como si fuera array.
+		if(accepted[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
+			fflush(stdin);							//Limpio el buffer de entrada.
+			if(i-init==1){							//Control para saber si es de tipo char o string. si es 1 es de tipo char.
+				struct charType *in = (struct charType*) malloc(sizeof(struct charType));
+				copyChais(&(*in).cValue, accepted, init, i);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+				(*in).iNodeType = CHAR;							//Asignacion de codigo del tipo de dato.
+				insert(&(*root), in);							//Inserta en el arbol el dato de tipo charType.
+			}else{
+				struct stringType *in = (struct stringType*) malloc(sizeof(struct stringType));
+				copyChais(&(*in).stChais, accepted, init, i);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
+				(*in).iNodeType = STRING;						//Asignacion de codigo del tipo de dato.
+				insert(&(*root), in);							//Inserta en el arbol el dato de tipo stringType.
+			}	
+			init = i+1;		//Incrementa el indice de indicando la posicion de donde comienza el siguiente estado.
+		}
+	}
+}//Funciona.
+
+void loadTransitions(child *root, child set){
+	char transitions[1000], states[100], alpha[50];
+	
+	memset(&transitions, '\0', strlen(transitions));
+	memset(&states, '\0', strlen(states));
+	memset(&alpha, '\0', strlen(alpha));
+	
+	getStates(&states, set->dtDatum);
+	set = set->dtNext;
+	getAlpha(&alpha, set->dtDatum);
+	
+	MenuDelta(&transitions, states, alpha);
+	//printf("\n Delta: %s ", transitions);
 }
 
-//METODOS PARA EL ARBOL.
-void initializeTree(ptrRoot *root){
-	root = NULL;
-}
-
-//Carga el arbol.
-void loadAll(ptrRoot *root){
-	loadStates( &(*root) );
-}
+//==============================================================================
+//METODOS DE IMPRESION.
 
 //Metodos para imprimir arbol.
-void inOrder(ptrRoot node){
+void inOrder(three node){
+	//printf("\ncode: %d = SET\n", node->iNodeType);
 	if( node!=NULL ){
 		//inOrder(node->dtDatum);
-		printThree(node);
+		printThree(node->dtDatum);
 		inOrder(node->dtNext);
 	}
 }
 
-void printThree(ptrRoot node){
+//Metodo para imprimir un registro de tipo stringType.
+void printThree(child node){
 	
-	printf(" %s ",node->dtDatum->stChais);
-
+	struct stringType *chais =  malloc(sizeof(struct stringType));
+	struct charType *character =  malloc(sizeof(struct charType));
+	
+	if(node->iNodeType == STRING){ chais = node; }
+	else{ character = node; }
+	switch (node->iNodeType){
+	case STRING:
+		if(node->iNodeType!=SET && node->iNodeType!=LIST){
+			//printf(" %s \tcode: %d = STRING", chais->stChais, chais->iNodeType);
+			printf(" %s ", chais->stChais);
+		}	
+		break;
+	case CHAR:
+		
+		if(node->iNodeType!=SET && node->iNodeType!=LIST){
+			//printf(" %c \tcode: %d = CHAR", character->cValue, character->iNodeType);
+			printf(" %c ", character->cValue);
+		}	
+		break;
+	default:
+		break;
+	}
 }
 
-void showStates(ptrRoot root){
+
+//________________________________________________
+//METODOS PARA IMPRIMIR CADA CONJUNTO DEL AUTOMATA.
+
+void showStates(child root){
+	printf("\n..................Satus = { ");
 	inOrder(root);
+	printf(" }");
+}
+
+void showAlphabet(child root){
+	printf("\n...............Alphabet = { ");
+	inOrder(root);
+	printf(" }");
+}
+
+void showInitialState(child root){
+	printf("\n.......Initial State(s) = { ");
+	inOrder(root);
+	printf(" }");
+}
+
+void showStateOfAcceptance(child root){
+	printf("\nStates of Acceptance(s) = { ");
+	inOrder(root);
+	printf(" }");
+}
+
+void showTransitions(child root){
+	printf("\n.........Transitions(s) = { ");
+	inOrder(root);
+	printf(" }");
+}
+
+//==============================================================================
+//METODOS PRINCIPALES.
+
+//Carga el arbol.
+void loadAll(three *root){
+	
+	three temp, aux;
+	int index=1;
+	
+	*root = malloc(sizeof(three));		//Reservo memoria para el arbol.
+	(*root)->iNodeType = SET;			//Es de tipo set ya que es la raiz del arbol.
+	temp = (*root);						//Copia temporal de la raiz del arbol.
+	
+	while(index<=5){
+		switch (index){
+		case 1:
+			loadStates(&(*root)->dtDatum);
+			break;
+		case 2:
+			
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadAlphabet(&(*root)->dtDatum);
+			
+			break;
+		case 3:				
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadInitialState(&(*root)->dtDatum, temp->dtDatum);
+			
+			break;
+		case 4:
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadStateOfAcceptance(&(*root)->dtDatum, temp->dtDatum);
+			break;
+		case 5:
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadTransitions(&(*root)->dtDatum, temp);
+			break;
+			
+		default:
+			break;
+		}
+		//aux = malloc(sizeof(three));
+		index++;
+	}
+	
+	(*root) = temp;
 }
 
 //Muestra el arbol.
-void showAll(ptrRoot root){
-	showStates(root);
+void showAll(three root){
+	printf("\n\n\n________________________________________________________________________");
+	showStates(root->dtDatum);			//Paso el padre del arbol de los estados.
+	
+	root = root->dtNext;
+	showAlphabet(root->dtDatum);
+	
+	root = root->dtNext;
+	showInitialState(root->dtDatum);
+	
+	root = root->dtNext;
+	showStateOfAcceptance(root->dtDatum);
+	
+	/*	root = root->dtNext;
+	showTransitions(root->dtDatum);*/
+	
+	printf("\n\n________________________________________________________________________\n\n\n");
 }
