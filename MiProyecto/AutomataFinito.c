@@ -95,6 +95,8 @@ void loadStateOfAcceptance(child *root, child set){
 void loadTransitions(child *root, child set){
 	char transitions[1000], states[100], alpha[50], str[20];
 	int init = 0, iniStr=0;
+	int cod;
+	bool flag;
 	
 	memset(&transitions, '\0', strlen(transitions));
 	memset(&states, '\0', strlen(states));
@@ -105,24 +107,36 @@ void loadTransitions(child *root, child set){
 	getAlpha(&alpha, set->dtDatum);
 	
 	MenuDelta(&transitions, states, alpha);
-	printf("\n Delta: %s \n", transitions);
 	
 	for(int i = 0; i < strlen(transitions); i++)	{	//Recorro status como si fuera array.
 		if(transitions[i]==';'){						//Cuando encuentra un ';', Nueva Transision.
+			//Nueva asignacion de code LIST.
+			cod = LIST;
+			flag=true;
 			for(int k=init; k<=i; k++){
 				if( transitions[k]==':' || transitions[k]=='>' || transitions[k]==';'){
 					fflush(stdin);				//Limpio el buffer de entrada.
+					
+					if(!flag){
+						if(k-iniStr==1){
+							cod = CHAR;
+						}else{
+							cod = STRING;
+						}
+					}
+					
 					if(k-iniStr==1){			//Control para saber si es de tipo char o string. si es 1 es de tipo char.
 						struct charType *in = (struct charType*) malloc(sizeof(struct charType));
 						copyChais(&(*in).cValue, transitions, iniStr, k);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
-						(*in).iNodeType = CHAR;							//Asignacion de codigo del tipo de dato.
+						(*in).iNodeType = cod;							//Asignacion de codigo del tipo de dato.
 						insert(&(*root), in);							//Inserta en el arbol el dato de tipo charType.
 					}else{
 						struct stringType *in = (struct stringType*) malloc(sizeof(struct stringType));
 						copyChais(&(*in).stChais, transitions, iniStr, k);		//Copia desde 'init' hasta 'i' la subcadena status al valor del registro.
-						(*in).iNodeType = STRING;						//Asignacion de codigo del tipo de dato.
+						(*in).iNodeType = cod;						//Asignacion de codigo del tipo de dato.
 						insert(&(*root), in);							//Inserta en el arbol el dato de tipo stringType.
 					}
+					flag=false;
 					iniStr=k+1;
 				}
 			}//Fin extracion de cadena o caracter.	
@@ -141,6 +155,13 @@ void inOrder(three node){
 		//inOrder(node->dtDatum);
 		printThree(node->dtDatum);
 		inOrder(node->dtNext);
+	}
+}
+
+void inOrderTr(three node){
+	if( node!=NULL ){
+		printThreeTrans(node->dtDatum);
+		inOrderTr(node->dtNext);
 	}
 }
 
@@ -171,38 +192,69 @@ void printThree(child node){
 	}
 }
 
+void printThreeTrans(child node){
+	
+	struct stringType *chais =  malloc(sizeof(struct stringType));
+	struct charType *character =  malloc(sizeof(struct charType));
+	
+	int sizeAux;
+	
+	if(node->iNodeType == STRING){ chais = node; }
+	if(node->iNodeType == CHAR){ character = node; }
+	if(node->iNodeType == LIST){ chais = node; }
+	
+	switch (node->iNodeType){
+	case STRING:
+		if(node->iNodeType!=SET ){
+			//printf(" %s \tcode: %d = STRING", chais->stChais, chais->iNodeType);
+			printf(" %s ", chais->stChais);
+		}	
+		break;
+	case CHAR:
+		
+		if(node->iNodeType!=SET ){
+			//printf(" %c \tcode: %d = CHAR", character->cValue, character->iNodeType);
+			printf(" %c ", character->cValue);
+		}
+	case LIST:
+		printf(" %s ", chais->stChais);
+		break;
+	default:
+		break;
+	}
+}
 
 //________________________________________________
 //METODOS PARA IMPRIMIR CADA CONJUNTO DEL AUTOMATA.
 
 void showStates(child root){
-	printf("\n..................Satus = { ");
+	printf("\n..................Satus = {");
 	inOrder(root);
-	printf(" }");
+	printf("}");
 }
 
 void showAlphabet(child root){
-	printf("\n...............Alphabet = { ");
+	printf("\n...............Alphabet = {");
 	inOrder(root);
-	printf(" }");
+	printf("}");
 }
 
 void showInitialState(child root){
-	printf("\n.......Initial State(s) = { ");
+	printf("\n.......Initial State(s) = {");
 	inOrder(root);
-	printf(" }");
+	printf("}");
 }
 
 void showStateOfAcceptance(child root){
-	printf("\nStates of Acceptance(s) = { ");
+	printf("\nStates of Acceptance(s) = {");
 	inOrder(root);
-	printf(" }");
+	printf("}");
 }
 
 void showTransitions(child root){
-	printf("\n.........Transitions(s) = { ");
-	inOrder(root);
-	printf(" }");
+	printf("\n.........Transitions(s) = {");
+	inOrderTr(root);
+	printf("}");
 }
 
 //==============================================================================

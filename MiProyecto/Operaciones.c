@@ -100,15 +100,38 @@ void getFinish(char *ReturnFinish, child root){
 }//Funciona.
 
 //Metodo que retorna en un string con las transisiones del AF.
-void getTransation(char *ReturnTransitions, child root){
+void getTransition(char *ReturnTransitions, child root){
 	struct stringType *str = malloc(sizeof(struct stringType));
+	bool flag = false;
 	while(root!=NULL){								//Recorro el arbol de los estados hacia derecha.
 		str = root->dtDatum;						//Asigno el registro del hijo izquierdo de SET a una variable.
-		root = root->dtNext;						//Avanza a derecha el puntero.
-		strcat(ReturnTransitions, str->stChais);			//Concatenacion.
-		strcat(ReturnTransitions, ";");					//Concatenacion para poner un alerta.
+		
+		if(str->iNodeType==LIST){ //Solo cuando es padre osea LIST
+			flag = true;
+			if (strlen(ReturnTransitions)!= NULL){
+				strcat(ReturnTransitions, ";");
+			}
+			strcat(ReturnTransitions, str->stChais);
+		}else{
+			if (flag){
+				strcat(ReturnTransitions, ":");
+				strcat(ReturnTransitions, str->stChais);
+				strcat(ReturnTransitions, ">");
+				flag = false;
+			}else{
+				strcat(ReturnTransitions, str->stChais);
+			}
+			if(root->dtNext!=NULL){
+				if( root->dtNext->dtDatum->iNodeType!=LIST ){
+					if(ReturnTransitions[strlen(ReturnTransitions)-1]!='>'){
+						strcat(ReturnTransitions, ":"); 
+					}
+				}
+			}
+		}
+		root = root->dtNext;			//Avanza a derecha el puntero.
 	}
-	strcat(ReturnTransitions, ".");						//Concatenacion de fin del arbol de estados.
+	strcat(ReturnTransitions, ";.");	//Concatenacion de fin del arbol de estados.
 }//Funciona.
 
 //Metodo para cargar un nodo.
@@ -176,21 +199,85 @@ void inputStr(char* Aux){
 	} while(strlen(Aux)==0 );
 }//Funciona.
 
+//METODO ANTEFINAL.
+bool evalTransitions(char *str, char *transition){
+	// transition = q0:a>q0:q1;q0:b>q0;q1:a>q0:q1;q1:b>q1;.
+	// str        = babababbababbaba
+	// 
+	//q0:b  q0:a y q1:a
+	int k=0, orig=0, dest=0;
+	char initial[20], statesDest[100], transOrigin[50], tranUnit[50];
+	
+	memset(&initial, '\0', strlen(initial));
+	memset(&transOrigin, '\0', strlen(transOrigin));
+	
+	while (transition[k]!=';') {
+		k++;
+	}	
+	copyChais(&initial, transition, 0, k);
+	
+	for (int i=0; i<strlen(str); i++) {
+		initial[strlen(initial)];
+		
+		orig = 0;
+		while (orig<strlen(transition)) {
+			if(transition[i]=='>'){
+				dest = i;
+				copyChais(&transOrigin, transition, orig, dest);
+				orig = i+1;
+				if(strstr(tranUnit,initial)!=NULL){
+					for(int x=0;x<strlen(tranUnit);x++){
+						if(tranUnit[x]='>'){
+							memset(&initial, '\0', strlen(initial));
+							copyChais(&initial, tranUnit, x,strlen(tranUnit) );
+						}
+					}
+				}
+			}
+			printf("\n tranOri: %s", transOrigin);
+		}
+		/*//qo,q1,q2:a concatenar esto initial+alpa 
+		while (dest < strlen(transition)) {
+			if(transition[dest] == ';'){
+				copyChais(&tranUnit, transition, orig, dest);
+				
+				if(strstr(tranUnit,initial)!=NULL){
+						laputa q te remilparioooooooo
+				}
+				orig = dest;
+			}
+			dest++;
+		}*/
+		//orig = i+1;
+	}
+	return true;
+}
+
+//METODO FINAL.
 void evalueChais(three root){ 		//Raiz del arbol.
 	
-	child fatherAlpha = root->dtNext;
-	char alpha[20], chais[50];
+	child fatherAlpha = root->dtNext, fatherTransitions;
+	char alpha[20], chais[50], trans[100];
 	
 	memset(&alpha, '\0', strlen(alpha));
+	memset(&trans, '\0', strlen(trans));
+	
 	getAlpha(&alpha, fatherAlpha->dtDatum);
+	
+	fatherTransitions = fatherAlpha->dtNext->dtNext->dtNext;
+	getTransition(trans, fatherTransitions->dtDatum);
+	
+	printf("\n transiciones: %s", trans);
 
 	printf("\nIngrese una cadena: ");
 	inputStr(chais);
 	
 	if(validateChais(chais, alpha)){
-		printf("\nCadena Aceptada (dentro del alfabeto)");
+		printf("\nCadena Aceptada (por el alfabeto)");
 		//Code evalTrans.
+		//if(evalTransitions(chais, trans)){
+		//}
 	}else{
-		printf("\nCadena No aceptada Aceptada (dentro del alfabeto)");
+		printf("\nCadena No aceptada Aceptada (Por cdel alfabeto)");
 	}
 }
