@@ -11,10 +11,8 @@
 //Opcion para continuar o no el ingreso.
 bool option(){
 	char opt[2];
-	//printf("\nContinuar carga? S/n: ");
 	do{
-		memset(opt, '\0',strlen(opt));
-		gets(opt);
+		leeCad(opt,2);
 		if ( opt[0]=='s' || opt[0]=='S') {
 			return true;
 		}
@@ -22,8 +20,7 @@ bool option(){
 		{
 			return false;
 		}else {
-			printf("\tError. Ingrese 's' o 'n': ");
-			memset(opt, '\0',strlen(opt));
+			printf("\tError. Ingrese 'S' o 'N': ");
 			printf(" %s ", opt);
 		}
 	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' && opt[0]!='N' );
@@ -43,9 +40,7 @@ void intro(char* Aux){
 void intoDelta(char* str, char *states){
 	bool flag=true;
 	do{
-		memset(&str, '\0', strlen(str));
-		gets(str);
-		fflush(stdin);
+		leeCad(str, 10);
 		flag=true;
 		if(strstr(states,str)==NULL){
 			printf("Error. Ingrese estado valido: ");
@@ -58,44 +53,43 @@ void intoDelta(char* str, char *states){
 //Retorna una cadena modificada.
 void MenuState(char* ReturnStates){	
 	// Load States 
-	int Salida=1;
-	char States[100];
+	char States[100], Aux[10];
+	int entrada;
 	do{				
-		memset(&States,'\0', strlen(States));
-		char Aux[5];
-		int entrada = 0;
+		entrada = 0;
 		printf ("\nCargue el estado inicial: ");
-		intro(States);
+		leeCad(States,100);
+		strcat(States, ";");
 		while (entrada == 0){
-			printf("Carge nuevo estado:  ");
-			intro(Aux);
+			printf("Carge nuevo estado: ");
+			leeCad(Aux,10);
+			strcat(Aux, ";");
 			if (strstr(States,Aux) == NULL ){
 				strcat(States,Aux);
-				printf("\t\tContinuar carga? S/N:  ");
+				printf("\t\tContinuar carga? S/N: ");
 				if( !option() ){
 					entrada = 1	;
 				}
-				
 			}else{ 
 				printf("\nError. Ya existe el estado ingresado!!!\n"); 
 			}
 		}
-		printf("\tÂ¿Estos son sus Estados? Q={ %s } -> S/N: ", States);
+		printf("\t¿Estos son sus Estados? Q={ %s } -> S/N: ", States);
 	}while( !option() );
 	strcat(States,"_;.");
 	strcpy(ReturnStates,States);
 }//Funciona.
 
 void MenuAlpha(char* Alpha){	
-	int salida;
-	char Symbol[100];
+	int entrada;
+	char Symbol[100], Aux[3];
 	do{
-		char Aux[5];
-		int entrada = 0;
+		entrada = 0;
 		memset(&Symbol,'\0', strlen(Symbol));	
 		while (entrada == 0){
 			printf("Cargue simbolo de su AF: ");
-			intro(Aux);
+			leeCad(Aux, 3);
+			strcat(Aux, ";");
 			if ( strstr(Symbol,Aux)==NULL && strlen(Aux)==2 ){
 				strcat(Symbol,Aux);
 				printf("\t\tContinuar carga? S/N: ");
@@ -108,26 +102,24 @@ void MenuAlpha(char* Alpha){
 				}else{
 					printf("\nError. %s Ya fue ingrsado!!!\n", Aux);
 				}
-				
 			}
 		}
-		fflush(stdin);		
-		printf("\tÂ¿Este es su Alfabeto? Alphabet={ %s } -> S/N: ", Symbol);
+		printf("\t¿Este es su Alfabeto? Alphabet={ %s } -> S/N: ", Symbol);
 	} while ( !option() );
 	strcat(Symbol, ".");
 	strcpy(Alpha,Symbol);
 }//Funciona.
 
 void MenuFinish(char* FStates, char* States){ //Load Final State
-	char FinalState[100];
-	int Salida=1;
+	char FinalState[100], Aux[10];
+	int entrada;
 	do{		
-		char Aux[5];
-		int entrada = 0;
+		entrada = 0;
 		memset(&FinalState,'\0', strlen(FinalState));
 		while (entrada == 0){
 			printf("Nuevo estado final: ");
-			intro(Aux);
+			leeCad(Aux, 10);
+			strcat(Aux, ";");
 			if (strstr(States,Aux)== NULL ){
 				printf("\nError. '%s' No existe en el AF:\n ",Aux);
 			}else{
@@ -142,8 +134,7 @@ void MenuFinish(char* FStates, char* States){ //Load Final State
 				}
 			}
 		}
-		fflush(stdin);
-		printf("\tÂ¿Son sus Estados de Aceptacion? F={ %s } -> S/N: ", FinalState);
+		printf("\t¿Son sus Estados de Aceptacion? F={ %s } -> S/N: ", FinalState);
 	}while ( !option() );
 	strcat(FinalState,".");		
 	strcpy(FStates,FinalState);	
@@ -177,7 +168,6 @@ void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function D
 							//Ciclo de carga de destino de la transicion.
 							entrada=true;
 							while(entrada){
-								memset(&in, '\0', strlen(in));
 								printf("Cargue Transicion ('_'=vacio): (%s , %c)->", state, Alpha[iAl]);
 								intoDelta(in,States);
 								if( strstr(destinations, in)==NULL && strlen(state)==strlen(in)){
@@ -192,23 +182,26 @@ void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function D
 									entrada = false	;
 								}
 							}
+							strcat(delta, origin);
+							strcat(delta, destinations);
 						}
+						
 					}//For del alfabeto.
+					
 				}
 				init = iSt+1;
-				strcat(delta, origin);
-				strcat(delta, destinations);
 			}
 		}//For de los estados.
-		printf("\tÂ¿Son sus Transiciones? S={ %s } -> S/N: ", delta);
+		printf("\n¿Son sus Transiciones? S={ %s } -> S/N: ", delta);
 	}while( !option() );
+	
 	strcpy(DeltaFunction, delta);
+	
 }//Funciona.
 
 //Realizar.
 void menu(){
 	
-	int op;
 	printf("\nFUNCIONES:");
 	printf("\n\n\t 1-Ingresar cadena para evaluar AF");
 	printf("\n\t 2-Mostrar el Automata Finito");

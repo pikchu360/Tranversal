@@ -5,20 +5,18 @@
 #include <string.h>
 
 int main(){
+	char cadena[100], cOp[2]; 
+		int op;
 	three raiz = NULL;
+	
 	printf("\t___________TEORIA DE LA COMPUTACION I___________\n\n\n");
 	printf("\n\n\nIngrese un AF: ");
 	
 	loadAll(&raiz);
 	showAll(raiz);
 	
-	//system("clear");
-	char cadena[100];
-	int op;
-	
 	menu();
-	do{
-		
+	do{		
 		switch (op){
 		case 1:
 			evalueChais(raiz);
@@ -33,8 +31,8 @@ int main(){
 			break;
 		}
 		printf("\n\n\nOpciones: ");
-		fflush(stdin);
-		scanf("%d", &op);
+		leeCad(cOp, 2);
+		op = (int)cOp[0]-48;
 		if( op!=1 && op!=2 && op!=3){
 			printf("Error. Ingrese un numero dentro del rango:");
 		}

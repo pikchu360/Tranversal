@@ -8,6 +8,25 @@
 //METODOS LECTURA DE LAS ESTRUCTURAS STRING Y CHAR.
 
 //METODOS DE LECTURA.
+int leeCad(char *cadena, int tam){
+	int j, ret;
+	char c;
+	j=0;
+	fflush(stdin);	
+	c=getchar();
+	ret=0;
+	while (c!=EOF && c!='\n' && j<tam-1){
+		cadena[j]=c;
+		j++;
+		c=getchar();
+		ret=1;
+	}
+	cadena[j]='\0';
+	while(c!=EOF && c!='\n')
+		c=getchar();
+	return ret;
+}
+
 //Ingresa un solo caracter.
 struct charType insertChar(){
 	struct charType ctChar;					//Variable auxiliar.
@@ -187,69 +206,27 @@ bool validateChais(char *str, char *alpha){
 	return flag;
 }//Funciona.
 
-void inputStr(char* Aux){
-	fflush(stdin);
-	do{
-		memset(Aux, '\0', strlen(Aux));
-		scanf("%s", Aux);
-		if(strlen(Aux)==0){
-			printf(" Error. Ingrese caracter: ");
-		}
-		fflush(stdin);
-	} while(strlen(Aux)==0 );
-}//Funciona.
-
 //METODO ANTEFINAL.
-bool evalTransitions(char *str, char *transition){
-	// transition = q0:a>q0:q1;q0:b>q0;q1:a>q0:q1;q1:b>q1;.
-	// str        = babababbababbaba
-	// 
-	//q0:b  q0:a y q1:a
-	int k=0, orig=0, dest=0;
-	char initial[20], statesDest[100], transOrigin[50], tranUnit[50];
+bool evalTransitions(char *str, child root){
+	//str: ababababa
+	//root = father de las transisiones.
+	struct stringType *son = malloc(sizeof(struct stringType));
+	child temp = root;
 	
-	memset(&initial, '\0', strlen(initial));
-	memset(&transOrigin, '\0', strlen(transOrigin));
+	int i = 0;
+	bool flag=true;
 	
-	while (transition[k]!=';') {
-		k++;
-	}	
-	copyChais(&initial, transition, 0, k);
-	
-	for (int i=0; i<strlen(str); i++) {
-		initial[strlen(initial)];
-		
-		orig = 0;
-		while (orig<strlen(transition)) {
-			if(transition[i]=='>'){
-				dest = i;
-				copyChais(&transOrigin, transition, orig, dest);
-				orig = i+1;
-				if(strstr(tranUnit,initial)!=NULL){
-					for(int x=0;x<strlen(tranUnit);x++){
-						if(tranUnit[x]='>'){
-							memset(&initial, '\0', strlen(initial));
-							copyChais(&initial, tranUnit, x,strlen(tranUnit) );
-						}
-					}
-				}
-			}
-			printf("\n tranOri: %s", transOrigin);
-		}
-		/*//qo,q1,q2:a concatenar esto initial+alpa 
-		while (dest < strlen(transition)) {
-			if(transition[dest] == ';'){
-				copyChais(&tranUnit, transition, orig, dest);
+	while( i<strlen(str) ){
+		root=temp;
+		while(root!=NULL){
+			if(flag){
 				
-				if(strstr(tranUnit,initial)!=NULL){
-						laputa q te remilparioooooooo
-				}
-				orig = dest;
 			}
-			dest++;
-		}*/
-		//orig = i+1;
+			root = root->dtNext;
+		}
+		i++;
 	}
+	
 	return true;
 }
 
@@ -265,18 +242,21 @@ void evalueChais(three root){ 		//Raiz del arbol.
 	getAlpha(&alpha, fatherAlpha->dtDatum);
 	
 	fatherTransitions = fatherAlpha->dtNext->dtNext->dtNext;
-	getTransition(trans, fatherTransitions->dtDatum);
+	//getTransition(trans, fatherTransitions->dtDatum);
 	
-	printf("\n transiciones: %s", trans);
+	//printf("\n transiciones: %s", trans);
 
 	printf("\nIngrese una cadena: ");
-	inputStr(chais);
+	leeCad(chais, 50);
 	
 	if(validateChais(chais, alpha)){
 		printf("\nCadena Aceptada (por el alfabeto)");
 		//Code evalTrans.
-		//if(evalTransitions(chais, trans)){
-		//}
+/*		if(evalTransitions(chais, fatherTransitions->dtDatum)){*/
+/*			printf("\nFunca. ");*/
+/*		}else{*/
+/*			printf("\nNo FUNCA.");*/
+/*		}*/
 	}else{
 		printf("\nCadena No aceptada Aceptada (Por cdel alfabeto)");
 	}
