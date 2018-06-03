@@ -207,43 +207,116 @@ bool validateChais(char *str, char *alpha){
 }//Funciona.
 
 //METODO ANTEFINAL.
-bool evalTransitions(char *str, child root){
+bool evalTransitions(char *str, child root, char *statesAccept){
 	//str: ababababa
 	//root = father de las transisiones.
 	struct stringType *son = malloc(sizeof(struct stringType));
-	child temp = root;
+	struct stringType *origin = malloc(sizeof(struct stringType));
+	struct stringType *dest = malloc(sizeof(struct stringType));
+	child temp, rootCheck;
 	
-	int i = 0;
-	bool flag=true;
+	char destinations[100], origins[100], state[50];
+	int i = 0, j = 0, init=0;
+	bool flag = false;
 	
+	temp = root;
+	dest = root->dtDatum;
+	
+	memset(&origins, '\0', strlen(origins));
+	strcpy(origins,dest->stChais);
+	strcat(origins,";");
+
 	while( i<strlen(str) ){
-		root=temp;
-		while(root!=NULL){
-			if(flag){
-				
+		init = 0;
+		j = 0;
+		memset(&destinations, '\0', strlen(destinations));
+		while(j<strlen(origins)){
+			if(origins[j]==';'){
+				memset(&state, '\0', strlen(state));
+				copyChais(&state ,origins, init, j);
+				root=temp;
+				rootCheck = root;
+				//printf("\n state: %s \n", state);
+				memset(&destinations, '\0', strlen(destinations));
+				while(root!=NULL){
+					son = rootCheck->dtDatum;
+					//printf("\n if1: %d==%d  && %s==%s \n", son->iNodeType, LIST, son->stChais, state);
+					if(son->iNodeType==LIST && strcmp(son->stChais,state)==0){
+						origin = son;
+						rootCheck = rootCheck->dtNext;
+						son = rootCheck->dtDatum;
+						//printf("\n if2: %d == %d  &&  %s == %c \n", son->iNodeType, CHAR, son->stChais, str[i]);
+						if(son->iNodeType == CHAR && son->stChais[0]==str[i]){
+							//printf("\n entro");
+							rootCheck = rootCheck->dtNext;
+							son = rootCheck->dtDatum;
+							origin = rootCheck; 
+							//system("pause");
+							while(rootCheck!=NULL){
+								if (son->iNodeType != LIST && son->iNodeType != CHAR ) {
+									strcat(destinations, son->stChais);
+									strcat(destinations, ";");
+								//	printf("\n copia: %s \n desde: %s", destinations, son->stChais);
+								}
+								rootCheck = rootCheck->dtNext;
+								if(rootCheck!=NULL){ 
+									son = rootCheck->dtDatum;
+								}
+							}
+						}
+					}	
+					dest = origin;
+					root = root->dtNext;
+					rootCheck = root;
+				}//Fin while root.
+				init=j+1;
+			}//Fin if origins.
+			j++;
+		}//Fin while j.
+//		printf("\n orin: %s ____ dest: %s \n", origins, destinations);
+		memset(&origins, '\0', strlen(origins));
+		strcpy(origins,destinations);
+		i++;
+	}//Fin de while i.
+	
+	//F=  [q0;q1;q4;q5;]  
+	//Des=[q3;q4;q9;]
+	i = 0;
+	while(i<strlen(destinations)){
+		if(origins[i]==';'){
+			memset(&state, '\0', strlen(state));
+			if( strstr(statesAccept,state)!=NULL ){		
+				flag = true; 
 			}
-			root = root->dtNext;
 		}
 		i++;
 	}
-	
-	return true;
-}
+	return flag;
+}//Probando.
 
 //METODO FINAL.
 void evalueChais(three root){ 		//Raiz del arbol.
 	
-	child fatherAlpha = root->dtNext, fatherTransitions;
-	char alpha[20], chais[50], trans[100];
+	child fatherAlpha, fatherTransitions, fatherAcceptance;
+	char alpha[20], chais[50], trans[100], accept[100];
 	
 	memset(&alpha, '\0', strlen(alpha));
 	memset(&trans, '\0', strlen(trans));
+	memset(&accept, '\0', strlen(accept));
 	
+	
+	fatherAlpha = root->dtNext;
 	getAlpha(&alpha, fatherAlpha->dtDatum);
+	
+	fatherAcceptance = fatherAlpha->dtNext->dtNext; 
+	getFinish(&accept, fatherAcceptance->dtDatum);
+
+	//printf("\n finish: %s \n", accept);
 	
 	fatherTransitions = fatherAlpha->dtNext->dtNext->dtNext;
 	//getTransition(trans, fatherTransitions->dtDatum);
 	
+
 	//printf("\n transiciones: %s", trans);
 
 	printf("\nIngrese una cadena: ");
@@ -252,12 +325,13 @@ void evalueChais(three root){ 		//Raiz del arbol.
 	if(validateChais(chais, alpha)){
 		printf("\nCadena Aceptada (por el alfabeto)");
 		//Code evalTrans.
-/*		if(evalTransitions(chais, fatherTransitions->dtDatum)){*/
-/*			printf("\nFunca. ");*/
-/*		}else{*/
-/*			printf("\nNo FUNCA.");*/
-/*		}*/
+		if(evalTransitions(chais, fatherTransitions->dtDatum,  accept)){
+			printf("\Cadena Aceptada por el AF. ");
+		}else{
+			printf("\nCadena NO ACEPTADA por el AF.");
+		}
 	}else{
 		printf("\nCadena No aceptada Aceptada (Por cdel alfabeto)");
 	}
 }
+

@@ -170,7 +170,7 @@ void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function D
 							while(entrada){
 								printf("Cargue Transicion ('_'=vacio): (%s , %c)->", state, Alpha[iAl]);
 								intoDelta(in,States);
-								if( strstr(destinations, in)==NULL && strlen(state)==strlen(in)){
+								if( strstr(destinations, in)==NULL ){
 									strcat(in, ":");
 									strcat(destinations, in);	
 								}else{
