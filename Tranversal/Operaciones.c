@@ -208,8 +208,6 @@ bool validateChais(char *str, char *alpha){
 
 //METODO ANTEFINAL.
 bool evalTransitions(char *str, child root, char *statesAccept){
-	//str: ababababa
-	//root = father de las transisiones.
 	struct stringType *son = malloc(sizeof(struct stringType));
 	struct stringType *origin = malloc(sizeof(struct stringType));
 	struct stringType *dest = malloc(sizeof(struct stringType));
@@ -236,27 +234,24 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 				copyChais(&state ,origins, init, j);
 				root=temp;
 				rootCheck = root;
-				//printf("\n state: %s \n", state);
 				memset(&destinations, '\0', strlen(destinations));
 				while(root!=NULL){
 					son = rootCheck->dtDatum;
-					//printf("\n if1: %d==%d  && %s==%s \n", son->iNodeType, LIST, son->stChais, state);
 					if(son->iNodeType==LIST && strcmp(son->stChais,state)==0){
 						origin = son;
 						rootCheck = rootCheck->dtNext;
 						son = rootCheck->dtDatum;
-						//printf("\n if2: %d == %d  &&  %s == %c \n", son->iNodeType, CHAR, son->stChais, str[i]);
 						if(son->iNodeType == CHAR && son->stChais[0]==str[i]){
-							//printf("\n entro");
 							rootCheck = rootCheck->dtNext;
 							son = rootCheck->dtDatum;
 							origin = rootCheck; 
-							//system("pause");
-							while(rootCheck!=NULL){
+							flag=true;
+							while(rootCheck!=NULL && flag){
 								if (son->iNodeType != LIST && son->iNodeType != CHAR ) {
 									strcat(destinations, son->stChais);
 									strcat(destinations, ";");
-								//	printf("\n copia: %s \n desde: %s", destinations, son->stChais);
+								}else{
+									flag = false;
 								}
 								rootCheck = rootCheck->dtNext;
 								if(rootCheck!=NULL){ 
@@ -273,21 +268,23 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 			}//Fin if origins.
 			j++;
 		}//Fin while j.
-//		printf("\n orin: %s ____ dest: %s \n", origins, destinations);
 		memset(&origins, '\0', strlen(origins));
 		strcpy(origins,destinations);
 		i++;
 	}//Fin de while i.
-	
-	//F=  [q0;q1;q4;q5;]  
-	//Des=[q3;q4;q9;]
-	i = 0;
-	while(i<strlen(destinations)){
+		
+	flag = false;
+	i = 0; init = 0;
+	while(i<strlen(origins)){
 		if(origins[i]==';'){
 			memset(&state, '\0', strlen(state));
-			if( strstr(statesAccept,state)!=NULL ){		
+			copyChais(&state, origins, init, i);
+			if( strstr(statesAccept,state)!= NULL ){
 				flag = true; 
+			}else{
+				flag = false;
 			}
+			init = i+1;
 		}
 		i++;
 	}
@@ -303,35 +300,27 @@ void evalueChais(three root){ 		//Raiz del arbol.
 	memset(&alpha, '\0', strlen(alpha));
 	memset(&trans, '\0', strlen(trans));
 	memset(&accept, '\0', strlen(accept));
-	
-	
+		
 	fatherAlpha = root->dtNext;
 	getAlpha(&alpha, fatherAlpha->dtDatum);
 	
 	fatherAcceptance = fatherAlpha->dtNext->dtNext; 
 	getFinish(&accept, fatherAcceptance->dtDatum);
-
-	//printf("\n finish: %s \n", accept);
 	
 	fatherTransitions = fatherAlpha->dtNext->dtNext->dtNext;
-	//getTransition(trans, fatherTransitions->dtDatum);
-	
-
-	//printf("\n transiciones: %s", trans);
 
 	printf("\nIngrese una cadena: ");
 	leeCad(chais, 50);
 	
 	if(validateChais(chais, alpha)){
-		printf("\nCadena Aceptada (por el alfabeto)");
 		//Code evalTrans.
 		if(evalTransitions(chais, fatherTransitions->dtDatum,  accept)){
-			printf("\Cadena Aceptada por el AF. ");
+			printf("\nCadena Aceptada por el AF. ");
 		}else{
 			printf("\nCadena NO ACEPTADA por el AF.");
 		}
 	}else{
-		printf("\nCadena No aceptada Aceptada (Por cdel alfabeto)");
+		printf("\nCadena No aceptada  (Por el alfabeto)");
 	}
 }
 
