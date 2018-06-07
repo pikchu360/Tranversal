@@ -224,6 +224,7 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 	strcpy(origins,dest->stChais);
 	strcat(origins,";");
 
+	//Evalua las transisiones.
 	while( i<strlen(str) ){
 		init = 0;
 		j = 0;

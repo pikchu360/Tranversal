@@ -177,13 +177,22 @@ void printThree(child node){
 	case STRING:
 		if(node->iNodeType!=SET && node->iNodeType!=LIST){
 			//printf(" %s \tcode: %d = STRING", chais->stChais, chais->iNodeType);
+			/*if(strstr(chais->stChais, ",")==NULL){
+				printf(" %s ", chais->stChais);
+			}else{
+				printf(" {%s} ", chais->stChais);
+			}*/
 			printf(" %s ", chais->stChais);
 		}	
 		break;
 	case CHAR:
 		
 		if(node->iNodeType!=SET && node->iNodeType!=LIST){
-			//printf(" %c \tcode: %d = CHAR", character->cValue, character->iNodeType);
+			/*if(strstr(chais->stChais, ",")==NULL){
+				printf(" %s ", chais->stChais);
+			}else{
+				printf(" {%s} ", chais->stChais);
+			}*/
 			printf(" %c ", character->cValue);
 		}	
 		break;
@@ -206,14 +215,22 @@ void printThreeTrans(child node){
 	switch (node->iNodeType){
 	case STRING:
 		if(node->iNodeType!=SET ){
-			//printf(" %s \tcode: %d = STRING", chais->stChais, chais->iNodeType);
+			/*if(strstr(chais->stChais, ",")==NULL){
+				printf(" %s ", chais->stChais);
+			}else{
+				printf(" {%s} ", chais->stChais);
+			}*/
 			printf(" %s ", chais->stChais);
 		}	
 		break;
 	case CHAR:
 		
 		if(node->iNodeType!=SET ){
-			//printf(" %c \tcode: %d = CHAR", character->cValue, character->iNodeType);
+			/*if(strstr(chais->stChais, ",")==NULL){
+				printf(" %s ", chais->stChais);
+			}else{
+				printf(" {%s} ", chais->stChais);
+			}*/
 			printf(" %c ", character->cValue);
 		}
 	case LIST:

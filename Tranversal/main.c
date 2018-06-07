@@ -11,6 +11,8 @@ int main(){
 	
 	printf("\t___________TEORIA DE LA COMPUTACION I___________\n\n\n");
 	printf("\n\n\nIngrese un AF: ");
+/*	if (exist("q0,q1;q3;q2,q3,q0,q1,q4;","q2,q4,q0,q3,q1;")){printf("\nsi esta");}else{printf("\nno aceptada");}*/
+/*	if (exist2("q0,q1;q2","q1")){printf("si esta e2");}else{printf("no aceptadae2");}*/
 	
 	loadAll(&raiz);
 	showAll(raiz);
@@ -24,6 +26,7 @@ int main(){
 			
 		case 2: 
 			showAll(raiz);
+			//afnd2afd(raiz);
 			break;
 		case 3:
 			op=3;
@@ -41,3 +44,5 @@ int main(){
 	printf("\n\n\t___________TEORIA DE LA COMPUTACION I___________");
 	return 0;
 }
+
+
