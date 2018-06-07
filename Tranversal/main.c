@@ -26,10 +26,12 @@ int main(){
 			
 		case 2: 
 			showAll(raiz);
-			//afnd2afd(raiz);
 			break;
 		case 3:
-			op=3;
+			afnd2afd(&raiz);
+			break;
+		case 4:
+			op=4;
 		default:
 			break;
 		}
@@ -39,7 +41,7 @@ int main(){
 		if( op!=1 && op!=2 && op!=3){
 			printf("Error. Ingrese un numero dentro del rango:");
 		}
-	}while( op!=3 );
+	}while( op!=4 );
 	
 	printf("\n\n\t___________TEORIA DE LA COMPUTACION I___________");
 	return 0;

@@ -205,6 +205,7 @@ void menu(){
 	printf("\nFUNCIONES:");
 	printf("\n\n\t 1-Ingresar cadena para evaluar AF");
 	printf("\n\t 2-Mostrar el Automata Finito");
-	printf("\n\t 3-Salir");
+	printf("\n\t 3-Convertir AFND a AFD");
+	printf("\n\t 4-Salir");
 	
 }

@@ -69,7 +69,7 @@ bool exist(char *states, char *src){
 
 
 void afnd2afd(three *root){
-	three temp = *root, rootCheck, fatherT;
+	three temp, rootCheck, fatherT;
 	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType)); 
 	struct stringType *son = malloc(sizeof(struct stringType));
 	int i=0, j=0, init = 0, k=0;
@@ -86,12 +86,13 @@ void afnd2afd(three *root){
 	memset(&origin, '\0', strlen(origin));
 	//getStates(&states, temp->dtDatum);
 	
-	temp = temp->dtNext;
-	getAlpha(&alphabet, temp->dtDatum);
+	temp = (*root)->dtNext;
 	
+	getAlpha(&alphabet, temp->dtDatum);
 	temp = temp->dtNext;
 	//getInitialState(&initial,)
-	auxChais = temp->dtDatum;
+	
+	auxChais = temp->dtDatum->dtDatum;
 	strcpy(initialState, auxChais->stChais);
 	
 	temp = temp->dtNext;
@@ -109,21 +110,25 @@ void afnd2afd(three *root){
 	memset(&deltaB, '\0', strlen(deltaB));
 	
 	while (k<strlen(states)) {
-		if (states[k]==";") {
+		if (states[k]==';') {
 			//Realizo la actualizacion del nuevo origen.
 			memset(&origin, '\0', strlen(origin));
 			copyChais(&origin,states,init,k);
 			strcat(origin, ";");
+			printf("\n origin: %s ", origin);
+			
 			i=0;
 			while(i<strlen(alphabet)){				//Analiza cada simbolo del alfabeto. 
-				if (alphabet[i]!=";") {			//Separacion de los simbolos del alfabeto.';' es el que indica el fin de un estado.
+				if (alphabet[i]!=';') {			//Separacion de los simbolos del alfabeto.';' es el que indica el fin de un estado.
 					j = 0;
 					init=0;//Setea indice de los estados.
 					while(j<strlen(origin)){		//Analiza el estado de origen. EJ (q,a) o ({p,q},a) , seria 'q' y del segundo seria 'p,q'.
-						if(origin[j]=="," && origin[j]!=";"){		//Recuperacion de 1 estado del conjunto de estados 'origin'.
+						printf("\norigin entra %d",strlen(origin));
+						printf("\norigin: %s",origin);
+						if(origin[j]==',' || origin[j]==';'){		//Recuperacion de 1 estado del conjunto de estados 'origin'.
 							memset(&state, '\0', strlen(state));	//Limpio el auxiliar state.
 							copyChais(&state, origin, init, j);	//Copio en state un estado de origin.
-							
+							printf("\n entra state: %s", state);
 							//Recorre el arbol de transiciones.
 							temp = fatherT;				//temp apunta al padre del arbol de transisiones.
 							rootCheck = temp;			//puntero auxiliar para el analisis.
@@ -163,27 +168,28 @@ void afnd2afd(three *root){
 								rootCheck = temp;
 							}//Fin while temp.
 							init = j+1;
-						}
+							
+							//Armo una transicion.
+							strcat(deltaB, origin);
+							strcat(deltaB, ":");
+							//strcat(deltaB, alphabet[i]);
+							deltaB[strlen(deltaB)]=alphabet[i];
+							strcat(deltaB, ">");
+							strcat(deltaB, destinations);
+							strcat(deltaB, ";");
+							
+							
+							if(!exist(states, destinations)){	//Formando el nuevo conjunto de estado del AFD equivalentes. (Qb)
+								strcat(states, destinations);
+								strcat(states, ";");
+							}
+						}//Fin If , y ;
 						//  {q0}:a > {q1,q0}
 						//	deltaB=" {q0}:a>{q0,q1} ; {q0}:b>{q1} ... "
 						//  {q0,q1}:a>{q0,q1}
 						//	deltaB=" {q0}:a>{q0,q1} ; {q0}:b>{q1} ; {q0,q1}:a>{q0,q1} ... "
 						//  {q0,q1}:a>{q0,q1}
 						//Evalua si los destino obtenidos ya existen en el conjunto de transisione. Si no existen entonces los agrega, Caso contrario no hace nada y continua. 
-						//if ( !exist(deltaB, destinations) ) {
-							//Armo una transicion.
-							strcat(deltaB, origin);
-							strcat(deltaB, ":");
-							strcat(deltaB, alphabet[i]);
-							strcat(deltaB, ">");
-							strcat(deltaB, destinations);
-							strcat(deltaB, ";");
-						//}
-						
-						if(!exist(states, destinations)){	//Formando el nuevo conjunto de estado del AFD equivalentes. (Qb)
-							strcat(states, destinations);
-							strcat(states, ";");
-						}
 						
 						j++;
 					}//Fin k, recorrido origen. 
@@ -191,8 +197,9 @@ void afnd2afd(three *root){
 				}//Fin if alphabet;
 				i++;
 			}//Fin i, recorrido Alfabeto.
+			init = k+1;
 		}//Fin If
-		init = k+1;
+		
 		k++;
 	}//Fin while k.
 	printf("\nStatesB: %s",states);
