@@ -11,8 +11,6 @@ int main(){
 	
 	printf("\t___________TEORIA DE LA COMPUTACION I___________\n\n\n");
 	printf("\n\n\nIngrese un AF: ");
-/*	if (exist("q0,q1;q3;q2,q3,q0,q1,q4;","q2,q4,q0,q3,q1;")){printf("\nsi esta");}else{printf("\nno aceptada");}*/
-/*	if (exist2("q0,q1;q2","q1")){printf("si esta e2");}else{printf("no aceptadae2");}*/
 	
 	loadAll(&raiz);
 	showAll(raiz);
@@ -38,7 +36,7 @@ int main(){
 		printf("\n\n\nOpciones: ");
 		leeCad(cOp, 2);
 		op = (int)cOp[0]-48;
-		if( op!=1 && op!=2 && op!=3){
+		if( op!=1 && op!=2 && op!=3 && op!=4){
 			printf("Error. Ingrese un numero dentro del rango:");
 		}
 	}while( op!=4 );

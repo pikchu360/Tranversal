@@ -15,11 +15,11 @@ tab_width=4
 tab_use_spaces=0
 explorer_path=
 inherits_from=
-current_source=AFND2AFD.c
+current_source=main.c
 path_char=/
 [source]
 path=main.c
-cursor=30:13
+cursor=4:19
 open=true
 [source]
 path=AutomataFinito.c
@@ -35,8 +35,8 @@ cursor=273:6
 open=true
 [source]
 path=AFND2AFD.c
-cursor=213:30
-breakpoint=176
+cursor=46:0
+breakpoint=98
 breakpoint_annotation=
 open=true
 [header]
