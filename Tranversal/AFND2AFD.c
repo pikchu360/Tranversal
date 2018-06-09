@@ -58,6 +58,37 @@ int sizeStates(child root){
 	return (int)pow(2, sum-1);
 }
 
+void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
+	// NAS nuevo esatdos ahi devuelve, AceptationStates los estados de aceptacion anteriores,StatesB los nuevos estados del AFDB
+	char* state[20], Finals[20];
+	int initS=0, initF=0;
+	bool flag = false; 
+	memset(&NAS,'\0',strlen(NAS));
+		
+	for (int i=0; i<strlen(StatesB);i++){// Recorre los StatesB
+		if (StatesB[i]==';'){// separa los estados de B
+			memset(&state,'\0',strlen(state));// Limpia el auxiliar
+			copyChais(&state,StatesB,initS,i);// copia el estado de B en el auxiliar
+			initF=0;// Setea la variable auxiliar de copia
+			for(int j=0; j<strlen(AceptationStates);j++){ // recorre los estados de Aceptacion del AFND
+				if (AceptationStates[j]==';'){ // separa los estados de aceptacion del AFND
+					memset(&Finals,'\0',strlen(Finals));// Limpia el auxiliar Finals
+					copyChais(&Finals,AceptationStates,initF,j);// Copia el estado de Aceptacion en el auxiliar
+					if(strstr(state,Finals)){// compara si existe la interseccion en distinta de vacia
+						if(!exist(NAS,state)){//Si es de aceptacion pregunta si no esta ya en los nuevos estados de aceptacion NAS
+							strcat(NAS,state); // Si el estado no estaba lo copia como un nuevo estado de aceptacion
+							strcat(NAS,';');
+						}//fin if exist
+					}//fin if strstr
+					initF=j+1;			//setea la variable de copia		
+				}//fin if AceptationStates ;
+				
+			}//Fin for j
+			initS=i+1;//setea la variable de copia
+		}//fin if StatesB ;
+	}//FIN for i
+}
+
 void afnd2afd(three *root){
 	three temp, rootCheck, fatherT;
 	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType)); 
@@ -65,9 +96,9 @@ void afnd2afd(three *root){
 	int i=0, j=0, k=0, init=0;
 	bool flag , flagDestination;
 	char states[2000], alphabet[100], initialState[50], statesOfAcceptance[100], transitions[1000];
-	char state[50], origin[100], destinations[100], deltaB[2000];
+	char state[50], origin[100], destinations[100], deltaB[2000], AcceptancesB[1000];
 	char cAuxAlp;
-	
+	memset(&AcceptancesB, '\0', strlen(AcceptancesB));
 	memset(&states, '\0', strlen(states));
 	memset(&alphabet, '\0', strlen(alphabet));
 	memset(&initialState, '\0', strlen(initialState));
@@ -175,6 +206,10 @@ void afnd2afd(three *root){
 		k++;
 	}//Fin Recorrido Partes de Q.
 	
+	newAceptationsStates(AcceptancesB,statesOfAcceptance,states);
+	
 	printf("\n\n\nStatesB: %s",states);
 	printf("\nDeltaB:  %s",deltaB);
+	printf("\n\n\nAceptacion : %s",AcceptancesB);
+	
 }
