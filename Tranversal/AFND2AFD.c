@@ -73,7 +73,7 @@ void afnd2afd(three *root){
 	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType)); 
 	struct stringType *son = malloc(sizeof(struct stringType));
 	int i=0, j=0, init = 0, k=0;
-	bool flag;
+	bool flag , flagDestination;
 	char states[2000], alphabet[100], initialState[50], statesOfAcceptance[100], transitions[1000];
 	char state[50], origin[100], destinations[100], deltaB[2000];
 	
@@ -82,7 +82,7 @@ void afnd2afd(three *root){
 	memset(&initialState, '\0', strlen(initialState));
 	memset(&statesOfAcceptance, '\0', strlen(statesOfAcceptance));
 	memset(&transitions, '\0', strlen(transitions));
-
+	memset(&destinations,'\0',strlen(destinations));
 	memset(&origin, '\0', strlen(origin));
 	//getStates(&states, temp->dtDatum);
 	
@@ -99,14 +99,12 @@ void afnd2afd(three *root){
 	getFinish(&statesOfAcceptance, temp->dtDatum);
 	
 	temp = temp->dtNext;
-	getTransition(&transitions, temp->dtDatum);
-	
-	fatherT = temp;		//Posicion del padre del arbol de transiciones.
+	//getTransition(&transitions, temp->dtDatum);
+	fatherT = temp->dtDatum;		//Posicion del padre del arbol de transiciones.
 	
 	//Copia del estado en el que me voy a parar segun la transicion.	
 	strcpy(states, initialState);
 	strcat(states, ";");
-	
 	memset(&deltaB, '\0', strlen(deltaB));
 	
 	while (k<strlen(states)) {
@@ -114,41 +112,46 @@ void afnd2afd(three *root){
 			//Realizo la actualizacion del nuevo origen.
 			memset(&origin, '\0', strlen(origin));
 			copyChais(&origin,states,init,k);
-			strcat(origin, ";");
-			printf("\n origin: %s ", origin);
-			
-			i=0;
+			strcat(origin,";"); 
+		    i=0;
 			while(i<strlen(alphabet)){				//Analiza cada simbolo del alfabeto. 
-				if (alphabet[i]!=';') {			//Separacion de los simbolos del alfabeto.';' es el que indica el fin de un estado.
+				flagDestination = true;
+				if (alphabet[i]!=';'&& alphabet[i]!='.') {			//Separacion de los simbolos del alfabeto.';' es el que indica el fin de un estado.
 					j = 0;
 					init=0;//Setea indice de los estados.
 					while(j<strlen(origin)){		//Analiza el estado de origen. EJ (q,a) o ({p,q},a) , seria 'q' y del segundo seria 'p,q'.
-						printf("\norigin entra %d",strlen(origin));
-						printf("\norigin: %s",origin);
+						//printf("\nwhile origin J origin: %s ",origin);
+						memset(&destinations,'\0',strlen(destinations)); //limpia la variable que guardara los estados de las transisiones.
 						if(origin[j]==',' || origin[j]==';'){		//Recuperacion de 1 estado del conjunto de estados 'origin'.
 							memset(&state, '\0', strlen(state));	//Limpio el auxiliar state.
 							copyChais(&state, origin, init, j);	//Copio en state un estado de origin.
-							printf("\n entra state: %s", state);
+							//printf("\nif , o ;");
 							//Recorre el arbol de transiciones.
 							temp = fatherT;				//temp apunta al padre del arbol de transisiones.
 							rootCheck = temp;			//puntero auxiliar para el analisis.
-							//memset(&destinations, '\0', strlen(destinations));		//limpia la variable que guardara los estados de las transisiones.
-							while(temp!=NULL){					//Recorrido del arbol de transiciones del AFND.
+		                    while(temp!=NULL){					//Recorrido del arbol de transiciones del AFND.
+							//	printf("\nwhile temp adentro");
 								son = rootCheck->dtDatum;		//Registro contenedor de la cadena representante de un estado o alfabeto.
 								if(son->iNodeType==LIST && strcmp(son->stChais,state)==0){		//Verificador de cada transicion.
+									//printf("\nif list adentro");
 									rootCheck = rootCheck->dtNext;			//Avanza el puntero para analizar los estados destino de un transicion.
 									son = rootCheck->dtDatum;				//Actualiza el registro al siguiente. ya que apuntaba al origen de una transicion.
 									if(son->iNodeType == CHAR && son->stChais[0]==alphabet[i]){		//Analiza el simbolo del alfabeto de la funcion delta.
+										//printf("\nif char adentro");
 										rootCheck = rootCheck->dtNext;		//Actualiza el apuntador para trabajar con los destino de la transisiones.
 										son = rootCheck->dtDatum;			//Actualiza el registro a un estado destino.
 										flag=true;							//Bandera usada para detener los procesos.
 										while(rootCheck!=NULL && flag){	//Recorro los estados destino.
 											if (son->iNodeType != LIST && son->iNodeType != CHAR ) {	//Trabaja solamente en los estado de destino.
-												
-												if (strstr(destinations,son->stChais)==NULL || strlen(destinations)==0 ) {
+												//("\nif no LIST no CHAR adentro");												
+												if(flagDestination){
+													memset(&destinations,'\0',strlen(destinations));
 													strcat(destinations, son->stChais);
+													flagDestination=false;
+												}else if (strstr(destinations,son->stChais)==NULL) {
 													strcat(destinations, ",");
-												}
+													strcat(destinations, son->stChais);
+													}
 											}else{
 												flag = false;		//Corta el recorrido cuando entra una nueva transision.
 											}
@@ -164,15 +167,17 @@ void afnd2afd(three *root){
 										
 									}
 								}	
+								
 								temp = temp->dtNext;
 								rootCheck = temp;
+						
 							}//Fin while temp.
-							init = j+1;
+							
 							
 							//Armo una transicion.
 							strcat(deltaB, origin);
-							strcat(deltaB, ":");
-							//strcat(deltaB, alphabet[i]);
+							deltaB[strlen(deltaB)-1]= ':';
+							//strcat(deltaB, ":");
 							deltaB[strlen(deltaB)]=alphabet[i];
 							strcat(deltaB, ">");
 							strcat(deltaB, destinations);
@@ -183,6 +188,10 @@ void afnd2afd(three *root){
 								strcat(states, destinations);
 								strcat(states, ";");
 							}
+							fflush(stdout);
+							printf("\ndestination:%s",destinations);
+							printf("\nDeltaB %s",deltaB);
+							init = j+1;
 						}//Fin If , y ;
 						//  {q0}:a > {q1,q0}
 						//	deltaB=" {q0}:a>{q0,q1} ; {q0}:b>{q1} ... "
