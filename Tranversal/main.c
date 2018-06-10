@@ -26,7 +26,7 @@ int main(){
 			showAll(raiz);
 			break;
 		case 3:
-			afnd2afd(&raiz);
+			afnd2afd(raiz);
 			break;
 		case 4:
 			op=4;

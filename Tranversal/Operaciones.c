@@ -183,6 +183,57 @@ void insert( child *root, struct stringType* input ){
 	}
 }//Funciona.
 
+void intoDelta(char* str, char *states){
+	bool flag=true;
+	do{
+		leeCad(str, 10);
+		flag=true;
+		if(strstr(states,str)==NULL){
+			printf("Error. Ingrese estado valido: ");
+		}else{
+			flag = false;
+		}
+	} while (flag);
+}
+
+//Metodo para analizar si un estado ya existe en algun conjunto de estados.
+bool exist(char *states, char *src){
+	int i = 0, j = 0, init1 = 0, init2 = 0;
+	char state1[50], state2[50];
+	bool flag = false, flag2;
+	
+	while (i<strlen(states) && !flag){				//Recorre los estados.
+		if (states[i]==';') {							//separo por estados un conjunto de estados de 1 o mas elementos.
+			memset(&state1, '\0', strlen(state1));		
+			copyChais(&state1, states, init1, i);	
+			if (strlen(state1)+1==strlen(src)) {		//Evita comparaciones con sub-estados.
+				j = 0;
+				init2=0;
+				flag2 = true;							//Bandera para cortar la busqueda. Si no esta un estado unitario.
+				while (j<strlen(src) && flag2) {		//Recorre el estado que se busca separando si contiene mas de un estado.
+					if (src[j]==',' || src[j]==';'){	//Separacion de sub-estados.
+						memset(&state2, '\0', strlen(state2));
+						copyChais(&state2, src, init2, j);
+						if (strstr(state1, state2)!=NULL){		//Busca un sub-estado en un estado.
+							flag = true;
+						}else{
+							flag = false;
+							flag2 = false;
+						}//Fin if strstr
+						init2 = j+1;
+					}//Fin if separacion de sub-estados.
+					j++;
+				}//Fin while j.
+			}else{
+				flag = false;
+			}
+			init1 = i+1;
+		}//Fin if separador de estados.
+		i++;
+	}//Fin while i.
+	return flag;
+}//Funciona.
+
 //________________________________________________________
 //Evalua si la cadena cumple con los simbolos del alfabeto.
 
@@ -325,3 +376,14 @@ void evalueChais(three root){ 		//Raiz del arbol.
 	}
 }
 
+/*void intro(char* Aux){*/
+/*	fflush(stdin);*/
+/*	do{*/
+/*		memset(Aux, '\0', strlen(Aux));*/
+/*		gets(Aux);*/
+/*		if(strlen(Aux)==0){*/
+/*			printf(" Error. Ingrese caracter: ");*/
+/*		}*/
+/*	} while(strlen(Aux)==0);*/
+/*	strcat(Aux,";");*/
+/*}*/

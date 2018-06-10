@@ -26,30 +26,6 @@ bool option(){
 	}while(opt[0]!='s' && opt[0]!='S' && opt[0]!='n' && opt[0]!='N' );
 }//Funciona.
 
-void intro(char* Aux){
-	fflush(stdin);
-	do{
-		memset(Aux, '\0', strlen(Aux));
-		gets(Aux);
-		if(strlen(Aux)==0){
-			printf(" Error. Ingrese caracter: ");
-		}
-	} while(strlen(Aux)==0);
-	strcat(Aux,";");
-}
-void intoDelta(char* str, char *states){
-	bool flag=true;
-	do{
-		leeCad(str, 10);
-		flag=true;
-		if(strstr(states,str)==NULL){
-			printf("Error. Ingrese estado valido: ");
-		}else{
-			flag = false;
-		}
-	} while (flag);
-}
-
 //Retorna una cadena modificada.
 void MenuState(char* ReturnStates){	
 	// Load States 
@@ -80,7 +56,7 @@ void MenuState(char* ReturnStates){
 	strcpy(ReturnStates,States);
 }//Funciona.
 
-void MenuAlpha(char* Alpha){	
+void MenuAlpha(char* Alpha, char *States){	
 	int entrada;
 	char Symbol[100], Aux[3];
 	do{
@@ -90,18 +66,22 @@ void MenuAlpha(char* Alpha){
 			printf("Cargue simbolo de su AF: ");
 			leeCad(Aux, 3);
 			strcat(Aux, ";");
-			if ( strstr(Symbol,Aux)==NULL && strlen(Aux)==2 ){
-				strcat(Symbol,Aux);
-				printf("\t\tContinuar carga? S/N: ");
-				if( !option() ){
-					entrada = 1	;
+			if (!exist(States, Aux)) {
+				if ( strstr(Symbol,Aux)==NULL && strlen(Aux)==2 ){
+					strcat(Symbol,Aux);
+					printf("\t\tContinuar carga? S/N: ");
+					if( !option() ){
+						entrada = 1	;
+					}
+				}else{
+					if(strlen(Aux)>2){
+						printf("\nError. Ingrese 1 solo caracter!!!\n");
+					}else{
+						printf("\nError. %s Ya fue ingrsado!!!\n", Aux);
+					}
 				}
 			}else{
-				if(strlen(Aux)>2){
-					printf("\nError. Ingrese 1 solo caracter!!!\n");
-				}else{
-					printf("\nError. %s Ya fue ingrsado!!!\n", Aux);
-				}
+				printf("\nError. Existe un caracter similar. Podria usar minuscula o mayuscula. (A<>a)\n");
 			}
 		}
 		printf("\t¿Este es su Alfabeto? Alphabet={ %s } -> S/N: ", Symbol);
@@ -143,9 +123,10 @@ void MenuFinish(char* FStates, char* States){ //Load Final State
 void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function Delta
 	char delta[1000], origin[50], destinations[50], state[20], in[10];
 	bool entrada, ex;
-	int init = 0;
+	int init;
 	
 	do{
+		init = 0;
 		memset(&delta ,'\0',strlen(delta));
 		for(int iSt = 0; iSt < strlen(States); iSt++){
 			//Veo si completo un estado.
@@ -185,18 +166,14 @@ void MenuDelta(char* DeltaFunction ,char* States, char* Alpha){//load function D
 							strcat(delta, origin);
 							strcat(delta, destinations);
 						}
-						
 					}//For del alfabeto.
-					
 				}
 				init = iSt+1;
 			}
 		}//For de los estados.
 		printf("\n¿Son sus Transiciones? S={ %s } -> S/N: ", delta);
 	}while( !option() );
-	
 	strcpy(DeltaFunction, delta);
-	
 }//Funciona.
 
 //Realizar.

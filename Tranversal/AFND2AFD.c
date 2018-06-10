@@ -6,45 +6,6 @@
 #include <stdbool.h>
 #include <math.h>
 
-//Metodo para analizar si un estado ya existe en algun conjunto de estados.
-bool exist(char *states, char *src){
-	int i = 0, j = 0, init1 = 0, init2 = 0;
-	char state1[50], state2[50];
-	bool flag = false, flag2;
-
-	while (i<strlen(states) && !flag){				//Recorre los estados.
-		if (states[i]==';') {							//separo por estados un conjunto de estados de 1 o mas elementos.
-			memset(&state1, '\0', strlen(state1));		
-			copyChais(&state1, states, init1, i);	
-			if (strlen(state1)+1==strlen(src)) {		//Evita comparaciones con sub-estados.
-				j = 0;
-				init2=0;
-				flag2 = true;							//Bandera para cortar la busqueda. Si no esta un estado unitario.
-				while (j<strlen(src) && flag2) {		//Recorre el estado que se busca separando si contiene mas de un estado.
-					if (src[j]==',' || src[j]==';'){	//Separacion de sub-estados.
-						memset(&state2, '\0', strlen(state2));
-						copyChais(&state2, src, init2, j);
-						if (strstr(state1, state2)!=NULL){		//Busca un sub-estado en un estado.
-							flag = true;
-						}else{
-							flag = false;
-							flag2 = false;
-						}//Fin if strstr
-						init2 = j+1;
-					}//Fin if separacion de sub-estados.
-					j++;
-				}//Fin while j.
-			}else{
-				flag = false;
-			}
-			init1 = i+1;
-		}//Fin if separador de estados.
-		i++;
-	}//Fin while i.
-	return flag;
-}//Funciona.
-
-
 int sizeStates(child root){
 	char states[100];
 	int sum = 0;
@@ -60,82 +21,71 @@ int sizeStates(child root){
 
 void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
 	// NAS nuevo esatdos ahi devuelve, AceptationStates los estados de aceptacion anteriores,StatesB los nuevos estados del AFDB
-	char* state[20], Finals[20];
+	char* state[20]={'\0'}, Finals[20]={'\0'};
 	int initS=0, initF=0;
-	bool flag = false; 
 	memset(&NAS,'\0',strlen(NAS));
 		
-	for (int i=0; i<strlen(StatesB);i++){// Recorre los StatesB
-		if (StatesB[i]==';'){// separa los estados de B
-			memset(&state,'\0',strlen(state));// Limpia el auxiliar
-			copyChais(&state,StatesB,initS,i);// copia el estado de B en el auxiliar
-			initF=0;// Setea la variable auxiliar de copia
-			for(int j=0; j<strlen(AceptationStates);j++){ // recorre los estados de Aceptacion del AFND
-				if (AceptationStates[j]==';'){ // separa los estados de aceptacion del AFND
-					memset(&Finals,'\0',strlen(Finals));// Limpia el auxiliar Finals
-					copyChais(&Finals,AceptationStates,initF,j);// Copia el estado de Aceptacion en el auxiliar
-					if(strstr(state,Finals)){// compara si existe la interseccion en distinta de vacia
-						if(!exist(NAS,state)){//Si es de aceptacion pregunta si no esta ya en los nuevos estados de aceptacion NAS
-							strcat(NAS,state); // Si el estado no estaba lo copia como un nuevo estado de aceptacion
-							strcat(NAS,';');
+	for (int i=0; i<strlen(StatesB);i++){			// Recorre los StatesB
+		if (StatesB[i]==';'){						// separa los estados de B
+			memset(&state,'\0',strlen(state));		// Limpia el auxiliar
+			copyChais(&state,StatesB,initS,i);		// copia el estado de B en el auxiliar
+			initF=0;								// Setea la variable auxiliar de copia
+			for(int j=0; j<strlen(AceptationStates);j++){ 	// recorre los estados de Aceptacion del AFND
+				if (AceptationStates[j]==';'){ 				// separa los estados de aceptacion del AFND
+					memset(&Finals,'\0',strlen(Finals));		// Limpia el auxiliar Finals
+					copyChais(&Finals,AceptationStates,initF,j);	// Copia el estado de Aceptacion en el auxiliar
+					if(strstr(state,Finals)!=NULL){				// compara si existe la interseccion en distinta de vacia
+						if(!exist(NAS,state)){						//Si es de aceptacion pregunta si no esta ya en los nuevos estados de aceptacion NAS
+							strcat(NAS,state); 						// Si el estado no estaba lo copia como un nuevo estado de aceptacion
+							strcat(NAS,";");
 						}//fin if exist
 					}//fin if strstr
-					initF=j+1;			//setea la variable de copia		
+					initF=j+1;					//setea la variable de copia		
 				}//fin if AceptationStates ;
-				
 			}//Fin for j
-			initS=i+1;//setea la variable de copia
+			initS=i+1;							//setea la variable de copia
 		}//fin if StatesB ;
 	}//FIN for i
 }
 
-void afnd2afd(three *root){
-	three temp, rootCheck, fatherT;
-	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType)); 
-	struct stringType *son = malloc(sizeof(struct stringType));
-	int i=0, j=0, k=0, init=0;
-	bool flag , flagDestination;
-	char states[2000], alphabet[100], initialState[50], statesOfAcceptance[100], transitions[1000];
-	char state[50], origin[100], destinations[100], deltaB[2000], AcceptancesB[1000];
-	char cAuxAlp;
-	memset(&AcceptancesB, '\0', strlen(AcceptancesB));
-	memset(&states, '\0', strlen(states));
-	memset(&alphabet, '\0', strlen(alphabet));
-	memset(&initialState, '\0', strlen(initialState));
-	memset(&statesOfAcceptance, '\0', strlen(statesOfAcceptance));
-	memset(&transitions, '\0', strlen(transitions));
-	memset(&destinations,'\0',strlen(destinations));
-	memset(&origin, '\0', strlen(origin));
-	memset(&deltaB, '\0', strlen(deltaB));
+//Metodo para la conversion de AFND a AFD. 
+void afnd2afd(three root){				//Viene el arbol completo. 
+	three temp, rootCheck, fatherT;		//Auxiliares para no modificar la raiz del arbol.
+	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType));	//Variable para trabajar el tipo de dato guardado. 
+	struct stringType *son = malloc(sizeof(struct stringType));								//Idem.
+	int i=0, j=0, k=0, init=0;			//Indices para ciclos y alguna funcion.
+	bool flag , flagDestination;		//Banderas de control de fin de ciclos.
+	//Declaracion de todos las cadenas necesarias para el manejo de la creacion del nuevo automata equivalente.
+	char states[2000]={'\0'}, alphabet[100]={'\0'}, initialState[50]={'\0'}, statesOfAcceptance[100]={'\0'}, chAux[10]={'\0'};
+	char state[50]={'\0'}, origin[100]={'\0'}, destinations[100]={'\0'}, deltaB[2000]={'\0'}, AcceptancesB[1000]={'\0'}, auxDelta[50] = {'\0'};
 	
-	temp = (*root);
-		
-	temp = (*root)->dtNext;
-	getAlpha(&alphabet, temp->dtDatum);
+	//Harcord the three.
+	temp = root;				//Asignacion de puntero auxiliar, hacia la raiz del arbol.
+	temp = root->dtNext;	//Avanza el puntero a derecha del arbol.
+	getAlpha(&alphabet, temp->dtDatum);	//Obtencion del alfabeto del AF.
 	
-	temp = temp->dtNext;
+	temp = temp->dtNext;					//Avanza a derecha el puntero.
+	auxChais = temp->dtDatum->dtDatum;		//Copia la estructura stringType o charType en auxChais.
+	strcpy(initialState, auxChais->stChais);//Extraccion del estado inicial del del AF.
 	
-	auxChais = temp->dtDatum->dtDatum;
-	strcpy(initialState, auxChais->stChais);
+	temp = temp->dtNext;							//Avanza el puntero a derecha.
+	getFinish(&statesOfAcceptance, temp->dtDatum);	//Obtencion de los estados de aceptacion del AF.
 	
-	temp = temp->dtNext;
-	getFinish(&statesOfAcceptance, temp->dtDatum);
+	temp = temp->dtNext;		//Avanza el puntero a derecha.
+	fatherT = temp->dtDatum;	//Posicion del padre del arbol de transiciones.
 	
-	temp = temp->dtNext;
-	fatherT = temp->dtDatum;		//Posicion del padre del arbol de transiciones.
+	strcpy(states, initialState);	//Copia del estado en el que me voy a parar segun la transicion.
+	strcat(states, ";");			//Concatenacion necesaria para separar cada estado nuevo.
 	
-	//Copia del estado en el que me voy a parar segun la transicion.	
-	strcpy(states, initialState);	
-	strcat(states, ";");
-	
-	while(k<strlen(states)){		//El corte de ciclo esta dado por el concepto indice<2^|P(Q)|
-		if (states[k]==';') {
+	while(k<strlen(states)){		//Recorre los estados del AFD equivalente.
+		if (states[k]==';') {		//separacion de estados.
 			//Realizo la actualizacion del nuevo origen.
 			memset(&origin, '\0', strlen(origin));
 			copyChais(&origin,states,init,k);
 			strcat(origin, ";");
+			printf("\norigin: %s", origin);
 			i=0;
-			while(i<strlen(alphabet)){				//Analiza cada simbolo del alfabeto. 
+			while(i<strlen(alphabet)){				//Recorrido del alfabeto del AF. 
 				flagDestination = true;
 				if (alphabet[i]!=';'&& alphabet[i]!='.') {	//Separacion de los simbolos del alfabeto.';' es el que indica el fin de un estado.
 					j = 0;
@@ -145,6 +95,7 @@ void afnd2afd(three *root){
 							memset(&state, '\0', strlen(state));	//Limpio el auxiliar state.
 							copyChais(&state, origin, init, j);	//Copio en state un estado de origin.
 							//Recorre el arbol de transiciones.
+							printf("\n state: %s", state);
 							temp = fatherT;				//temp apunta al padre del arbol de transisiones.
 							rootCheck = temp;			//puntero auxiliar para el analisis.
 							while(temp!=NULL){					//Recorrido del arbol de transiciones del AFND.
@@ -158,39 +109,55 @@ void afnd2afd(three *root){
 										flag=true;							//Bandera usada para detener los procesos.
 										while(rootCheck!=NULL && flag){	//Recorro los estados destino.
 											if (son->iNodeType != LIST && son->iNodeType != CHAR ) {	//Trabaja solamente en los estado de destino.
-												if(flagDestination){
-													memset(&destinations,'\0',strlen(destinations));
-													strcat(destinations, son->stChais);
+												if(flagDestination){		//La bandera controla la primera transicion evaluada.
+													memset(&destinations,'\0',strlen(destinations));	//Limpieza.
+													strcat(destinations, son->stChais);				//concatena el estado de llegada.
 													flagDestination=false;
-												}else if (strstr(destinations,son->stChais)==NULL) {
-													strcat(destinations, ",");
-													strcat(destinations, son->stChais);
+												}else if (strstr(destinations,son->stChais)==NULL) {	//Control de existencia de un nuevo estado de llegada.
+													strcat(destinations, ",");							//Separacion de sub-estados.
+													strcat(destinations, son->stChais);				//concatena el nuevo estado de llegada.
 												}
 											}else{
-												flag = false;		//Corta el recorrido cuando entra una nueva transision.
+												if (son->iNodeType != LIST && son->iNodeType == CHAR ) {	//Trabaja solamente en los estado de destino.
+													if(flagDestination){									//La bandera controla la primera transicion evaluada.
+														memset(&destinations,'\0',strlen(destinations));	//Limpieza.
+														strcat(destinations, son->stChais);				//concatena el estado de llegada.
+														flagDestination=false;
+													}else if (strstr(destinations,son->stChais)==NULL) {	//Control de existencia de un nuevo estado de llegada.
+														strcat(destinations, ",");							//Separacion de sub-estados.
+														strcat(destinations, son->stChais);				//concatena el nuevo estado de llegada.
+													}
+												}else{
+													flag = false;
+												}//Fin else del if Armado de destinos de CHAR
+											}//Fin else del if Armado de destinos de STRING
+											rootCheck = rootCheck->dtNext;	//Avanza el puntero a su derecha.
+											if(rootCheck!=NULL){ 			//Control para hijo izquierdo.
+												son = rootCheck->dtDatum;	//Asignacion de datos.
 											}
-											rootCheck = rootCheck->dtNext;
-											if(rootCheck!=NULL){ 
-												son = rootCheck->dtDatum;
-											}
-										}//Fin Armado de estados destinos.
-									}
-								}	
+										}//Fin while Armado de estados destinos.
+									}//Fin if son->iNodeType == CHAR && son->stChais[0]==alphabet[i]
+								}//Fin if son->iNodeType==LIST && strcmp(son->stChais,state)==0
 								temp = temp->dtNext;
 								rootCheck = temp;
 							}//Fin while temp.
 							init = j+1;
 						}//Fin If , y ;
 						j++;
-					}//Fin j, recorrido origen. 
-					strcat(destinations, ";");
-					if (destinations[0]!=';') {
-						strcat(deltaB, origin);
-						deltaB[strlen(deltaB)-1]= ':';
-						cAuxAlp =(char)alphabet[i]; // falla concatena cosas demas
-						deltaB[strlen(deltaB)]= cAuxAlp;
-						strcat(deltaB, ">");
-						strcat(deltaB, destinations);
+					}//Fin j, recorrido origen.
+					strcat(destinations, ";");					
+					
+					if (destinations[0]!=';') {	//Control para concatenar correctamente las nuevas transiciones.
+						strcat(auxDelta, origin);
+						auxDelta[strlen(auxDelta)-1]= ':';
+						auxDelta[strlen(auxDelta)] = '\0';
+						auxDelta[strlen(auxDelta)] = alphabet[i];
+						auxDelta[strlen(auxDelta)] = '\0';
+						strcat(auxDelta, ">");
+						strcat(auxDelta, destinations);
+						
+						strcat(deltaB, auxDelta);
+						memset(&auxDelta, '\0', strlen(auxDelta));
 					}
 								
 					if(!exist(states, destinations) && destinations!=";"){	//Formando el nuevo conjunto de estado del AFD equivalentes. (Qb)
@@ -212,4 +179,7 @@ void afnd2afd(three *root){
 	printf("\nDeltaB:  %s",deltaB);
 	printf("\n\n\nAceptacion : %s",AcceptancesB);
 	
+	/*
+	crear el nuevo arbol, o actualizar
+	*/
 }

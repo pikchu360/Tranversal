@@ -36,13 +36,17 @@ void loadStates(child *root){
 	}	
 }//Funciona.
 
-void loadAlphabet(child *root){
+void loadAlphabet(child *root, three fatherStates){
 	char alph[100];			//Variable que guardara el alfabeto.
 	int init=0;				//indice para hacer una copia correcta.
+	char states[100]={'\0'};
+	
+	//Obtencion de los estados previamente cargados.
+	getStates(&states, fatherStates->dtDatum);
 	
 	printf("\n________________________________________________________________________");
 	printf("\nAlfabeto del automata: \n\n\n");
-	MenuAlpha(&alph);
+	MenuAlpha(&alph, states);
 	for(int i = 0; i < strlen(alph); i++)	{	//Recorro status como si fuera array.
 		if(alph[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
 			fflush(stdin);						//Limpio el buffer de entrada.
@@ -153,7 +157,7 @@ void inOrder(three node){
 	//printf("\ncode: %d = SET\n", node->iNodeType);
 	if( node!=NULL ){
 		//inOrder(node->dtDatum);
-		printThree(node->dtDatum);
+		printThree(node);
 		inOrder(node->dtNext);
 	}
 }
@@ -166,8 +170,9 @@ void inOrderTr(three node){
 }
 
 //Metodo para imprimir un registro de tipo stringType.
-void printThree(child node){
+void printThree(child father){
 	
+	child node = father->dtDatum;
 	struct stringType *chais =  malloc(sizeof(struct stringType));
 	struct charType *character =  malloc(sizeof(struct charType));
 	
@@ -176,28 +181,19 @@ void printThree(child node){
 	switch (node->iNodeType){
 	case STRING:
 		if(node->iNodeType!=SET && node->iNodeType!=LIST){
-			//printf(" %s \tcode: %d = STRING", chais->stChais, chais->iNodeType);
-			/*if(strstr(chais->stChais, ",")==NULL){
-				printf(" %s ", chais->stChais);
-			}else{
-				printf(" {%s} ", chais->stChais);
-			}*/
 			printf(" %s ", chais->stChais);
 		}	
 		break;
 	case CHAR:
-		
 		if(node->iNodeType!=SET && node->iNodeType!=LIST){
-			/*if(strstr(chais->stChais, ",")==NULL){
-				printf(" %s ", chais->stChais);
-			}else{
-				printf(" {%s} ", chais->stChais);
-			}*/
 			printf(" %c ", character->cValue);
 		}	
 		break;
 	default:
 		break;
+	}
+	if(father->dtNext!=NULL){
+		printf(";");
 	}
 }
 
@@ -269,9 +265,51 @@ void showStateOfAcceptance(child root){
 }
 
 void showTransitions(child root){
-	printf("\n.........Transitions(s) = {");
-	inOrderTr(root);
-	printf("}");
+	printf("\n.........Transitions(s):\n");
+	printT(root);
+	//inOrderTr(root);
+	//printf("}");
+}
+
+void printT(child root){
+	int i = 0, j, k, init=0, l;
+	char transitions[1000]={'\0'}, origin[50]={'\0'}, destinations[100]={'\0'}, alpha, deltaFunc[100]={'\0'};
+	getTransition(&transitions, root);
+	while(i<strlen(transitions)){
+		if(transitions[i]==';'){
+			memset(&deltaFunc, '\0', strlen(deltaFunc));
+			copyChais(&deltaFunc, transitions, init, i);
+			j = 0;
+			init = 0;
+			while(j<strlen(deltaFunc)){
+				if(deltaFunc[j]==':'){
+					copyChais(&origin, deltaFunc, init, j);
+					k = j+1;
+					while(k<i){
+						if(deltaFunc[k]=='>'){
+							alpha = deltaFunc[k-1];
+							l = k+1;
+							while(l<i){
+								if(deltaFunc[l]==':'){
+									deltaFunc[l]=',';
+								}
+								l++;
+							}
+							memset(&destinations, '\0', strlen(destinations));
+							copyChais(&destinations, deltaFunc, k+1, i);
+							printf("\n\t\tS(%s;%c) = {%s}", origin, alpha, destinations);
+							//printf("\n.........Transitions(s) = {");
+							memset(&origin, '\0', strlen(origin));
+							init = i+1;
+						}
+						k++;
+					}//Fin separacion del simbolo del alfabeto.
+				}//Fin if separacion de origen.
+				j++;
+			}//Fin Recorrido de una sola transicion. while j 
+		}//Fin if separacion de transiciones.
+		i++;
+	}//Funciona.
 }
 
 //==============================================================================
@@ -280,7 +318,7 @@ void showTransitions(child root){
 //Carga el arbol.
 void loadAll(three *root){
 	
-	three temp, aux;
+	three temp, fatherStates;
 	int index=1;
 	
 	*root = malloc(sizeof(three));		//Reservo memoria para el arbol.
@@ -294,10 +332,11 @@ void loadAll(three *root){
 			break;
 		case 2:
 			
+			fatherStates = (*root);
 			(*root)->dtNext = malloc(sizeof(three));
 			(*root) = (*root)->dtNext;
 			(*root)->iNodeType = SET;
-			loadAlphabet(&(*root)->dtDatum);
+			loadAlphabet(&(*root)->dtDatum, fatherStates);
 			
 			break;
 		case 3:				
@@ -345,6 +384,7 @@ void showAll(three root){
 	
 	root = root->dtNext;
 	showTransitions(root->dtDatum);
+	//showT(root->dtDatum);
 	
 	printf("\n\n________________________________________________________________________\n\n\n");
 }

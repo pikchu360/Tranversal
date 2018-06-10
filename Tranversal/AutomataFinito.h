@@ -56,7 +56,7 @@ void stringShow();
 
 //Metodos para cargar el automata.
 void loadStates(child *root); 						//Paso por referencia al padre jr.
-void loadAlphabet(child *root);						//idem
+void loadAlphabet(child *root, three fatherStates);	//idem
 void loadInitialState(child *root, child set);		//idem
 void loadStateOfAcceptance(child *root, child set);	//idem
 void loadTransitions(child *root, child set);		//idem
