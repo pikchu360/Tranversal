@@ -15,7 +15,7 @@ tab_width=4
 tab_use_spaces=0
 explorer_path=
 inherits_from=
-current_source=AFND2AFD.c
+current_source=AutomataFinito.c
 path_char=/
 [source]
 path=main.c
