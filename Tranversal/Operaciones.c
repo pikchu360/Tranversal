@@ -258,7 +258,7 @@ bool validateChais(char *str, char *alpha){
 }//Funciona.
 
 //METODO ANTEFINAL.
-bool evalTransitions(char *str, child root, char *statesAccept){
+bool evalTransitions(char *str, child root, char *statesAccept, bool choiseFlag){
 	struct stringType *son = malloc(sizeof(struct stringType));
 	struct stringType *origin = malloc(sizeof(struct stringType));
 	struct stringType *dest = malloc(sizeof(struct stringType));
@@ -303,7 +303,12 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 									strcat(destinations, son->stChais);
 									strcat(destinations, ";");
 								}else{
-									flag = false;
+									if (son->iNodeType != LIST && son->iNodeType == CHAR ) {	//Trabaja solamente en los estado de destino.
+										strcat(destinations, son->stChais);
+										strcat(destinations, ";");
+									}else{
+										flag = false;
+									}//Fin else del if Armado de destinos de CHAR
 								}
 								rootCheck = rootCheck->dtNext;
 								if(rootCheck!=NULL){ 
@@ -327,14 +332,23 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 		
 	flag = false;
 	i = 0; init = 0;
+	
 	while(i<strlen(origins)){
 		if(origins[i]==';'){
 			memset(&state, '\0', strlen(state));
 			copyChais(&state, origins, init, i);
-			if( strstr(statesAccept,state)!= NULL ){
-				flag = true; 
+			if (choiseFlag) {
+				if( strstr(statesAccept,state)!= NULL ){
+					flag = true; 
+				}else{
+					flag = false;
+				}
 			}else{
-				flag = false;
+				if( strstr(statesAccept,state)!= NULL ){//arreglar
+					flag = true; 
+				}else{
+					flag = false;
+				}
 			}
 			init = i+1;
 		}
@@ -344,7 +358,7 @@ bool evalTransitions(char *str, child root, char *statesAccept){
 }//Probando.
 
 //METODO FINAL.
-void evalueChais(three root){ 		//Raiz del arbol.
+void evalueChais(three root, bool choiseFlag){ 		//Raiz del arbol.
 	
 	child fatherAlpha, fatherTransitions, fatherAcceptance;
 	char alpha[20], chais[50], trans[100], accept[100];
@@ -366,7 +380,7 @@ void evalueChais(three root){ 		//Raiz del arbol.
 	
 	if(validateChais(chais, alpha)){
 		//Code evalTrans.
-		if(evalTransitions(chais, fatherTransitions->dtDatum,  accept)){
+		if(evalTransitions(chais, fatherTransitions->dtDatum,  accept, choiseFlag)){
 			printf("\nCadena Aceptada por el AF. ");
 		}else{
 			printf("\nCadena NO ACEPTADA por el AF.");
@@ -375,15 +389,3 @@ void evalueChais(three root){ 		//Raiz del arbol.
 		printf("\nCadena No aceptada  (Por el alfabeto)");
 	}
 }
-
-/*void intro(char* Aux){*/
-/*	fflush(stdin);*/
-/*	do{*/
-/*		memset(Aux, '\0', strlen(Aux));*/
-/*		gets(Aux);*/
-/*		if(strlen(Aux)==0){*/
-/*			printf(" Error. Ingrese caracter: ");*/
-/*		}*/
-/*	} while(strlen(Aux)==0);*/
-/*	strcat(Aux,";");*/
-/*}*/

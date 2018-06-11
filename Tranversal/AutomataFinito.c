@@ -9,14 +9,18 @@
 //______________________________________________
 //METODOS PARA CARGAR CADA CONJUNTO DEL AUTOMATA.
 
-void loadStates(child *root){
+void loadStates(child *root, bool flag, char *states){
 	char status[100];		//String donde se guardaran los estados ingresados.
 	int init=0;				//indice para hacer una copia correcta.
 	
-	printf("\n________________________________________________________________________");
-	printf("\nEstado/os del automata: \n\n");
+	if (flag) {
+		printf("\n________________________________________________________________________");
+		printf("\nEstado/os del automata: \n\n");
+		MenuState(&status);							//Guarda en status todos los estados ingresados, separado por un ';'.
+	}else{
+		strcpy(status,states);
+	}
 	
-	MenuState(&status);							//Guarda en status todos los estados ingresados, separado por un ';'.
 	for(int i = 0; i < strlen(status); i++)	{	//Recorro status como si fuera array.
 		if(status[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
 			fflush(stdin);						//Limpio el buffer de entrada.
@@ -36,7 +40,7 @@ void loadStates(child *root){
 	}	
 }//Funciona.
 
-void loadAlphabet(child *root, three fatherStates){
+void loadAlphabet(child *root, three fatherStates, bool flag, char *alphabet){
 	char alph[100];			//Variable que guardara el alfabeto.
 	int init=0;				//indice para hacer una copia correcta.
 	char states[100]={'\0'};
@@ -44,9 +48,14 @@ void loadAlphabet(child *root, three fatherStates){
 	//Obtencion de los estados previamente cargados.
 	getStates(&states, fatherStates->dtDatum);
 	
-	printf("\n________________________________________________________________________");
-	printf("\nAlfabeto del automata: \n\n\n");
-	MenuAlpha(&alph, states);
+	if (flag) {
+		printf("\n________________________________________________________________________");
+		printf("\nAlfabeto del automata: \n\n\n");
+		MenuAlpha(&alph, alphabet);					//Guarda en status todos los estados ingresados, separado por un ';'.
+	}else{
+		strcpy(alph,alphabet);
+	}
+	
 	for(int i = 0; i < strlen(alph); i++)	{	//Recorro status como si fuera array.
 		if(alph[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
 			fflush(stdin);						//Limpio el buffer de entrada.
@@ -65,17 +74,22 @@ void loadInitialState(child *root, child set){
 	insert(&(*root), initialState);
 }//Funciona.
 
-void loadStateOfAcceptance(child *root, child set){
+void loadStateOfAcceptance(child *root, child set, bool flag, char *stateFinish){
 	char states[100], accepted[50];			//string para los estados y otro para los estados de aceptacion.
 	int init=0;									//indice para hacer una copia correcta.
 	
 	memset(&states, '\0', strlen(states));		//Limpio variables. 
 	memset(&accepted, '\0', strlen(accepted));	//Limpio variables. 
+			//Separa los que son de aceptacion segun el usuario.
 	
-	printf("\n________________________________________________________________________");
-	printf("\nEstado/os de Aceptacion: \n\n\n");	
-	getStates(&states, set);			//Obtencion de los estados desde el arbol.
-	MenuFinish(&accepted, states);				//Separa los que son de aceptacion segun el usuario.
+	if (flag) {
+		printf("\n________________________________________________________________________");
+		printf("\nEstado/os de Aceptacion: \n\n\n");	
+		getStates(&states, set);			//Obtencion de los estados desde el arbol.
+		MenuFinish(&accepted, states);						//Guarda en status todos los estados ingresados, separado por un ';'.
+	}else{
+		strcpy(accepted,stateFinish);
+	}
 	
 	for(int i = 0; i < strlen(accepted); i++)	{	//Recorro status como si fuera array.
 		if(accepted[i]==';'){						//Cuando encuentra un ';', lo anterior a eso es un estado.
@@ -96,7 +110,7 @@ void loadStateOfAcceptance(child *root, child set){
 	}
 }//Funciona.
 
-void loadTransitions(child *root, child set){
+void loadTransitions(child *root, child set, bool flag1, char *trans){
 	char transitions[1000], states[100], alpha[50], str[20];
 	int init = 0, iniStr=0;
 	int cod;
@@ -110,7 +124,11 @@ void loadTransitions(child *root, child set){
 	set = set->dtNext;
 	getAlpha(&alpha, set->dtDatum);
 	
-	MenuDelta(&transitions, states, alpha);
+	if (flag1) {
+		MenuDelta(&transitions, states, alpha);					//Guarda en status todos los estados ingresados, separado por un ';'.
+	}else{
+		strcpy(transitions,trans);
+	}
 	
 	for(int i = 0; i < strlen(transitions); i++)	{	//Recorro status como si fuera array.
 		if(transitions[i]==';'){						//Cuando encuentra un ';', Nueva Transision.
@@ -328,7 +346,7 @@ void loadAll(three *root){
 	while(index<=5){
 		switch (index){
 		case 1:
-			loadStates(&(*root)->dtDatum);
+			loadStates(&(*root)->dtDatum, true, "");
 			break;
 		case 2:
 			
@@ -336,7 +354,7 @@ void loadAll(three *root){
 			(*root)->dtNext = malloc(sizeof(three));
 			(*root) = (*root)->dtNext;
 			(*root)->iNodeType = SET;
-			loadAlphabet(&(*root)->dtDatum, fatherStates);
+			loadAlphabet(&(*root)->dtDatum, fatherStates, true, "");
 			
 			break;
 		case 3:				
@@ -350,13 +368,13 @@ void loadAll(three *root){
 			(*root)->dtNext = malloc(sizeof(three));
 			(*root) = (*root)->dtNext;
 			(*root)->iNodeType = SET;
-			loadStateOfAcceptance(&(*root)->dtDatum, temp->dtDatum);
+			loadStateOfAcceptance(&(*root)->dtDatum, temp->dtDatum, true, "");
 			break;
 		case 5:
 			(*root)->dtNext = malloc(sizeof(three));
 			(*root) = (*root)->dtNext;
 			(*root)->iNodeType = SET;
-			loadTransitions(&(*root)->dtDatum, temp);
+			loadTransitions(&(*root)->dtDatum, temp, true, "");
 			break;
 			
 		default:

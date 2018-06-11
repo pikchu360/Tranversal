@@ -63,7 +63,7 @@ void MenuAlpha(char* Alpha, char *States){
 		entrada = 0;
 		memset(&Symbol,'\0', strlen(Symbol));	
 		while (entrada == 0){
-			printf("Cargue simbolo de su AF: ");
+			printf("Cargue un simbolo de su AF: ");
 			leeCad(Aux, 3);
 			strcat(Aux, ";");
 			if (!exist(States, Aux)) {
@@ -81,7 +81,7 @@ void MenuAlpha(char* Alpha, char *States){
 					}
 				}
 			}else{
-				printf("\nError. Existe un caracter similar. Podria usar minuscula o mayuscula. (A<>a)\n");
+				printf("\nError. Existe un Estado en Q con ese Simbolo . Podria usar minuscula o mayuscula. (A<>a)\n");
 			}
 		}
 		printf("\t¿Este es su Alfabeto? Alphabet={ %s } -> S/N: ", Symbol);
@@ -183,6 +183,8 @@ void menu(){
 	printf("\n\n\t 1-Ingresar cadena para evaluar AF");
 	printf("\n\t 2-Mostrar el Automata Finito");
 	printf("\n\t 3-Convertir AFND a AFD");
-	printf("\n\t 4-Salir");
+	printf("\n\t 4-Mostrar el Automata Finito Determinista Convertido");
+	printf("\n\t 5-Ingresar cadena para evaluar AFD equivalente");
+	printf("\n\t 6-Salir");
 	
 }

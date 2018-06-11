@@ -4,20 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <math.h>
 
-int sizeStates(child root){
-	char states[100];
-	int sum = 0;
-	getStates(&states, root);
-	
-	for(int i=0; i<strlen(states); i++){
-		if(states[i]==';'){
-			sum++;
-		}
-	}
-	return (int)pow(2, sum-1);
-}
 
 void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
 	// NAS nuevo esatdos ahi devuelve, AceptationStates los estados de aceptacion anteriores,StatesB los nuevos estados del AFDB
@@ -29,15 +16,16 @@ void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
 		if (StatesB[i]==';'){						// separa los estados de B
 			memset(&state,'\0',strlen(state));		// Limpia el auxiliar
 			copyChais(&state,StatesB,initS,i);		// copia el estado de B en el auxiliar
+			strcat(state,";");
 			initF=0;								// Setea la variable auxiliar de copia
 			for(int j=0; j<strlen(AceptationStates);j++){ 	// recorre los estados de Aceptacion del AFND
 				if (AceptationStates[j]==';'){ 				// separa los estados de aceptacion del AFND
 					memset(&Finals,'\0',strlen(Finals));		// Limpia el auxiliar Finals
 					copyChais(&Finals,AceptationStates,initF,j);	// Copia el estado de Aceptacion en el auxiliar
 					if(strstr(state,Finals)!=NULL){				// compara si existe la interseccion en distinta de vacia
+						//printf("\nif %s <- %s",NAS, state );
 						if(!exist(NAS,state)){						//Si es de aceptacion pregunta si no esta ya en los nuevos estados de aceptacion NAS
 							strcat(NAS,state); 						// Si el estado no estaba lo copia como un nuevo estado de aceptacion
-							strcat(NAS,";");
 						}//fin if exist
 					}//fin if strstr
 					initF=j+1;					//setea la variable de copia		
@@ -49,7 +37,7 @@ void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
 }
 
 //Metodo para la conversion de AFND a AFD. 
-void afnd2afd(three root){				//Viene el arbol completo. 
+void afnd2afd(three *newRoot, three root){				//Viene el arbol completo. 
 	three temp, rootCheck, fatherT;		//Auxiliares para no modificar la raiz del arbol.
 	struct stringType *auxChais = (struct stringType*) malloc(sizeof(struct stringType));	//Variable para trabajar el tipo de dato guardado. 
 	struct stringType *son = malloc(sizeof(struct stringType));								//Idem.
@@ -83,7 +71,6 @@ void afnd2afd(three root){				//Viene el arbol completo.
 			memset(&origin, '\0', strlen(origin));
 			copyChais(&origin,states,init,k);
 			strcat(origin, ";");
-			printf("\norigin: %s", origin);
 			i=0;
 			while(i<strlen(alphabet)){				//Recorrido del alfabeto del AF. 
 				flagDestination = true;
@@ -95,7 +82,6 @@ void afnd2afd(three root){				//Viene el arbol completo.
 							memset(&state, '\0', strlen(state));	//Limpio el auxiliar state.
 							copyChais(&state, origin, init, j);	//Copio en state un estado de origin.
 							//Recorre el arbol de transiciones.
-							printf("\n state: %s", state);
 							temp = fatherT;				//temp apunta al padre del arbol de transisiones.
 							rootCheck = temp;			//puntero auxiliar para el analisis.
 							while(temp!=NULL){					//Recorrido del arbol de transiciones del AFND.
@@ -171,15 +157,58 @@ void afnd2afd(three root){				//Viene el arbol completo.
 		}//Fin If
 		
 		k++;
-	}//Fin Recorrido Partes de Q.
-	
+	}//Fin Recorrido Partes de Q.	
 	newAceptationsStates(AcceptancesB,statesOfAcceptance,states);
+	generateAFD(&(*newRoot), states, alphabet, AcceptancesB, deltaB);
+}
+
+void generateAFD(three *root, char *states, char *alphabet, char *statesFinish, char *transitions){
+	three temp, fatherStates;
+	int index=1;
 	
-	printf("\n\n\nStatesB: %s",states);
-	printf("\nDeltaB:  %s",deltaB);
-	printf("\n\n\nAceptacion : %s",AcceptancesB);
+	*root = malloc(sizeof(three));		//Reservo memoria para el arbol.
+	(*root)->iNodeType = SET;			//Es de tipo set ya que es la raiz del arbol.
+	temp = (*root);						//Copia temporal de la raiz del arbol.
 	
-	/*
-	crear el nuevo arbol, o actualizar
-	*/
+	while(index<=5){
+		switch (index){
+		case 1:
+			loadStates(&(*root)->dtDatum, false, states);
+			break;
+		case 2:
+			
+			fatherStates = (*root);
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadAlphabet(&(*root)->dtDatum, fatherStates, false, alphabet);
+			
+			break;
+		case 3:				
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadInitialState(&(*root)->dtDatum, fatherStates->dtDatum);
+			
+			break;
+		case 4:
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadStateOfAcceptance(&(*root)->dtDatum, temp->dtDatum, false, statesFinish);
+			break;
+		case 5:
+			(*root)->dtNext = malloc(sizeof(three));
+			(*root) = (*root)->dtNext;
+			(*root)->iNodeType = SET;
+			loadTransitions(&(*root)->dtDatum, temp, false, transitions);
+			break;
+			
+		default:
+			break;
+		}
+		index++;
+	}
+	
+	(*root) = temp;
 }

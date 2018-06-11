@@ -1,5 +1,6 @@
 #ifndef AUTOMATAFINITO_H
 #define AUTOMATAFINITO_H
+#include <stdbool.h>
 
 //defino el codigos del tipos de datos asociado.
 #define INT 1024
@@ -55,11 +56,11 @@ void charShow();
 void stringShow();
 
 //Metodos para cargar el automata.
-void loadStates(child *root); 						//Paso por referencia al padre jr.
-void loadAlphabet(child *root, three fatherStates);	//idem
-void loadInitialState(child *root, child set);		//idem
-void loadStateOfAcceptance(child *root, child set);	//idem
-void loadTransitions(child *root, child set);		//idem
+void loadStates(child *root, bool flag, char *states); 							//Paso por referencia al padre jr.
+void loadAlphabet(child *root, three fatherStates, bool flag, char *alphabet);		//idem
+void loadInitialState(child *root, child set);										//idem
+void loadStateOfAcceptance(child *root, child set, bool flag, char *stateFinish);	//idem
+void loadTransitions(child *root, child set, bool flag, char *trans);				//idem
 
 //Metodos para imprimir el automata.
 void showStates(child root);				//Paso por valor al padre jr.
