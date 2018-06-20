@@ -344,7 +344,9 @@ bool evalTransitions(char *str, child root, char *statesAccept, bool choiseFlag)
 					flag = false;
 				}
 			}else{
-				if( strstr(statesAccept,state)!= NULL ){//arreglar
+				strcat(state, ";");
+				//printf("\n strcmp(%s /-/ %s) == %d", statesAccept, state, strcmp(statesAccept,state));				
+				if( exist(statesAccept,state) ){
 					flag = true; 
 				}else{
 					flag = false;
@@ -375,7 +377,7 @@ void evalueChais(three root, bool choiseFlag){ 		//Raiz del arbol.
 	
 	fatherTransitions = fatherAlpha->dtNext->dtNext->dtNext;
 
-	printf("\nIngrese una cadena: ");
+	printf("\nIngrese una cadena('_'=vacio): ");
 	leeCad(chais, 50);
 	
 	if(validateChais(chais, alpha)){

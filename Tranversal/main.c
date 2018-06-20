@@ -19,36 +19,39 @@ int main(){
 	menu();
 	do{
 		switch (op){
-		case 1:
-			evalueChais(raiz,true);
-			menu();
-			break;
-		case 2: 
-			showAll(raiz);
-			break;
-		case 3:
-			flag = true;
-			afnd2afd(&raizAFD, raiz);
-			break;
-		case 4:
-			if(flag){
-				showAll(raizAFD);
-			}else{
-				printf("\nError. Primero convierta su automata.");
-			}
-			break;
-		case 5:
-			if (flag) {
-				evalueChais(raizAFD,false);
+			case 1:
+				evalueChais(raiz,true);
 				menu();
-			}else{
-				printf("\nError. Primero convierta su automata.");
-			}
-			break;
-		case 6:
-			op=6;
-		default:
-			break;
+				break;
+			case 2: 
+				showAll(raiz);
+				menu();
+				break;
+			case 3:
+				flag = true;
+				afnd2afd(&raizAFD, raiz);
+				menu();
+				break;
+			case 4:
+				if(flag){
+					showAll(raizAFD);
+				}else{
+					printf("\nError. Primero convierta su automata.");
+				}
+				menu();
+				break;
+			case 5:
+				if (flag) {
+					evalueChais(raizAFD,false);
+				}else{
+					printf("\nError. Primero convierta su automata.");
+				}
+				menu();
+				break;
+			case 6:
+				op=6;
+			default:
+				break;
 		}
 		printf("\n\n\nOpciones: ");
 		leeCad(cOp, 2);
