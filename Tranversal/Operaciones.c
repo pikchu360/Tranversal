@@ -332,7 +332,7 @@ bool evalTransitions(char *str, child root, char *statesAccept, bool choiseFlag)
 		
 	flag = false;
 	i = 0; init = 0;
-	
+
 	while(i<strlen(origins)){
 		if(origins[i]==';'){
 			memset(&state, '\0', strlen(state));
@@ -345,7 +345,6 @@ bool evalTransitions(char *str, child root, char *statesAccept, bool choiseFlag)
 				}
 			}else{
 				strcat(state, ";");
-				//printf("\n strcmp(%s /-/ %s) == %d", statesAccept, state, strcmp(statesAccept,state));				
 				if( exist(statesAccept,state) ){
 					flag = true; 
 				}else{
@@ -363,12 +362,8 @@ bool evalTransitions(char *str, child root, char *statesAccept, bool choiseFlag)
 void evalueChais(three root, bool choiseFlag){ 		//Raiz del arbol.
 	
 	child fatherAlpha, fatherTransitions, fatherAcceptance;
-	char alpha[20], chais[50], trans[100], accept[100];
+	char alpha[20]={'\0'}, chais[50]={'\0'}, trans[100]={'\0'}, accept[100]={'\0'};
 	
-	memset(&alpha, '\0', strlen(alpha));
-	memset(&trans, '\0', strlen(trans));
-	memset(&accept, '\0', strlen(accept));
-		
 	fatherAlpha = root->dtNext;
 	getAlpha(&alpha, fatherAlpha->dtDatum);
 	
@@ -379,7 +374,7 @@ void evalueChais(three root, bool choiseFlag){ 		//Raiz del arbol.
 
 	printf("\nIngrese una cadena('_'=vacio): ");
 	leeCad(chais, 50);
-	
+	fflush(stdin);
 	if(validateChais(chais, alpha)){
 		//Code evalTrans.
 		if(evalTransitions(chais, fatherTransitions->dtDatum,  accept, choiseFlag)){

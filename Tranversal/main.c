@@ -42,7 +42,8 @@ int main(){
 				break;
 			case 5:
 				if (flag) {
-					evalueChais(raizAFD,false);
+					//evalueChais(raizAFD,true);
+					evalueChais(raiz,true);
 				}else{
 					printf("\nError. Primero convierta su automata.");
 				}

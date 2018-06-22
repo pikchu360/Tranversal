@@ -129,7 +129,7 @@ void loadTransitions(child *root, child set, bool flag1, char *trans){
 	}else{
 		strcpy(transitions,trans);
 	}
-	
+
 	for(int i = 0; i < strlen(transitions); i++)	{	//Recorro status como si fuera array.
 		if(transitions[i]==';'){						//Cuando encuentra un ';', Nueva Transision.
 			//Nueva asignacion de code LIST.
@@ -315,8 +315,9 @@ void printT(child root){
 							}
 							memset(&destinations, '\0', strlen(destinations));
 							copyChais(&destinations, deltaFunc, k+1, i);
-							printf("\n\t\tS(%s;%c) = {%s}", origin, alpha, destinations);
-							//printf("\n.........Transitions(s) = {");
+							if ( strlen(origin)>1) {
+								printf("\n\t\tS(%s;%c) = {%s}", origin, alpha, destinations);
+							}
 							memset(&origin, '\0', strlen(origin));
 							init = i+1;
 						}

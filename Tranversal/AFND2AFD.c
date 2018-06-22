@@ -23,7 +23,6 @@ void newAceptationsStates(char* NAS, char *AceptationStates,char* StatesB){
 					memset(&Finals,'\0',strlen(Finals));		// Limpia el auxiliar Finals
 					copyChais(&Finals,AceptationStates,initF,j);	// Copia el estado de Aceptacion en el auxiliar
 					if(strstr(state,Finals)!=NULL){				// compara si existe la interseccion en distinta de vacia
-						//printf("\nif %s <- %s",NAS, state );
 						if(!exist(NAS,state)){						//Si es de aceptacion pregunta si no esta ya en los nuevos estados de aceptacion NAS
 							strcat(NAS,state); 						// Si el estado no estaba lo copia como un nuevo estado de aceptacion
 						}//fin if exist
